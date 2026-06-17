@@ -1,0 +1,1040 @@
+<!-- SuperSummary DS 2.0 Prototype — Hot Takes: Demon Copperhead (v2) -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Polls Playground — Hot Takes</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap');
+
+  :root{
+    --brand-main:#1a7b87;
+    --bg-default:#ffffff; --bg-paper:#f8f8f8; --bg-offpaper:#ededed;
+    --text-primary:#212121; --text-secondary:#616161; --text-disable:#909090;
+    --text-primary-contrast:#f8f8f8;
+    --border-main:#bfbfbf; --border-light:#d9d9d9; --border-dark:#797979;
+    --interactive-primary:#006c7a; --interactive-hover:#005863;
+    --interactive-primary-bg:#f0f9fa; --interactive-hover-bg:#cfebee;
+    --interactive-disabled-bg:#cfcfcf;
+    --success:#00631a; --success-bg:#cce5d3; --success-text:#004a14;
+    --info:#14567e; --info-bg:#b9d3e2; --info-text:#0f405f;
+    --support-aqua-1:#01434b; --support-aqua-6:#cfebee;
+    --support-magenta-1:#8e5159; --support-magenta-6:#f6e5e7;
+    --acqua-950:#f0f9fa; --acqua-900:#cfebee; --acqua-500:#27929e; --acqua-400:#1a7b87; --acqua-300:#006c7a;
+    --grey-950:#f8f8f8; --grey-900:#ededed; --grey-800:#d9d9d9; --grey-700:#bfbfbf;
+    --shadow-color:rgba(0,0,0,0.12);
+    --elevation-1:0px 2px 8px 0px var(--shadow-color);
+    --elevation-2:0px 6px 16px 0px var(--shadow-color);
+    --space-2:2px; --space-4:4px; --space-8:8px; --space-12:12px; --space-16:16px;
+    --space-24:24px; --space-32:32px; --space-40:40px; --space-48:48px;
+    --radius-xs:4px; --radius-sm:8px; --radius-md:12px; --radius-default:16px; --radius-pill:100px;
+    --font-ui:'Open Sans',sans-serif; --font-reading:'Source Serif 4',serif;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg-default:#f8f8f8; --bg-paper:#ededed; --bg-offpaper:#e3e3e3;
+      --interactive-primary:#1a7b87; --shadow-color:rgba(187,187,187,0.12); }
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--font-ui);background:var(--bg-offpaper);color:var(--text-primary);font-size:16px;line-height:1.5;padding:var(--space-24) var(--space-16);}
+  .app{max-width:760px;margin:0 auto;}
+
+  /* header */
+  .app-header{display:flex;align-items:center;gap:var(--space-16);background:var(--bg-default);
+    border:1px solid var(--border-light);border-radius:var(--radius-default);padding:var(--space-16) var(--space-24);
+    box-shadow:var(--elevation-1);margin-bottom:var(--space-16);}
+  .cover{width:48px;height:64px;border-radius:var(--radius-xs);background:var(--support-magenta-1);
+    display:flex;align-items:center;justify-content:center;color:var(--text-primary-contrast);
+    font-family:var(--font-reading);font-weight:600;font-size:13px;text-align:center;line-height:1.1;padding:4px;flex-shrink:0;}
+  .head-meta .kicker{font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--interactive-primary);}
+  .head-meta h1{font-family:var(--font-reading);font-size:22px;font-weight:600;line-height:1.2;}
+  .head-meta .author{font-size:13px;color:var(--text-secondary);}
+
+  /* page head */
+  .page-head{margin-bottom:var(--space-24);}
+  .page-head .kicker{font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--interactive-primary);}
+  .page-title{font-family:var(--font-reading);font-size:28px;font-weight:600;line-height:1.15;margin:var(--space-4) 0;}
+  .page-sub{font-size:14px;line-height:1.55;color:var(--text-secondary);}
+
+  /* book picker */
+  .book-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-12);margin-bottom:var(--space-32);}
+  .book-card{display:flex;flex-direction:column;text-align:left;gap:2px;
+    background:var(--bg-default);border:1.5px solid var(--border-light);border-radius:var(--radius-md);
+    padding:var(--space-16);cursor:pointer;transition:border-color .15s,background .15s;font-family:var(--font-ui);}
+  .book-card:hover{border-color:var(--interactive-primary);background:var(--interactive-primary-bg);}
+  .book-card.sel{border-color:var(--interactive-primary);border-width:2px;background:var(--interactive-primary-bg);}
+  .bk-meta{display:flex;flex-direction:column;gap:2px;}
+  .bk-title{font-size:14px;font-weight:700;color:var(--text-primary);line-height:1.25;}
+  .bk-author{font-size:12px;color:var(--text-secondary);}
+  .bk-src{font-size:11px;color:var(--text-secondary);opacity:.8;margin-top:2px;}
+
+  /* setup */
+  .setup{background:var(--bg-default);border:1px solid var(--border-light);border-radius:var(--radius-default);
+    padding:var(--space-32);box-shadow:var(--elevation-1);}
+  .digestif{display:flex;gap:var(--space-8);align-items:flex-start;background:var(--interactive-primary-bg);
+    border-radius:var(--radius-sm);padding:var(--space-12) var(--space-16);font-size:13px;color:var(--interactive-primary);
+    margin-bottom:var(--space-24);}
+  .step-label{font-size:13px;font-weight:700;color:var(--text-secondary);margin-bottom:var(--space-12);
+    display:flex;align-items:center;gap:var(--space-8);}
+  .step-num{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;
+    background:var(--interactive-primary);color:var(--text-primary-contrast);font-size:12px;font-weight:700;}
+  .cat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--space-12);margin-bottom:var(--space-32);}
+  .cat-card{text-align:left;background:var(--bg-default);border:1.5px solid var(--border-light);border-radius:var(--radius-md);
+    padding:var(--space-16);cursor:pointer;transition:border-color .15s,background .15s;font-family:var(--font-ui);}
+  .cat-card:hover{border-color:var(--interactive-primary);background:var(--interactive-primary-bg);}
+  .cat-card.sel{border-color:var(--interactive-primary);border-width:2px;background:var(--interactive-primary-bg);}
+  .cat-card .ci{font-size:22px;display:block;margin-bottom:var(--space-8);}
+  .cat-card .ct{display:block;font-size:15px;font-weight:700;color:var(--text-primary);}
+  .cat-card .cd{display:block;font-size:12px;color:var(--text-secondary);margin-top:2px;}
+  .len-row{display:flex;gap:var(--space-12);margin-bottom:var(--space-32);}
+  .len-opt{flex:1;text-align:center;background:var(--bg-default);border:1.5px solid var(--border-light);
+    border-radius:var(--radius-md);padding:var(--space-16) var(--space-8);cursor:pointer;transition:border-color .15s,background .15s;font-family:var(--font-ui);}
+  .len-opt:hover{border-color:var(--interactive-primary);background:var(--interactive-primary-bg);}
+  .len-opt.sel{border-color:var(--interactive-primary);border-width:2px;background:var(--interactive-primary-bg);}
+  .len-opt .ln{font-size:24px;font-weight:700;color:var(--interactive-primary);}
+  .len-opt .ld{font-size:12px;color:var(--text-secondary);}
+  .btn{font-family:var(--font-ui);font-size:16px;font-weight:600;padding:12px 24px;border-radius:var(--radius-sm);border:none;cursor:pointer;transition:background .2s;}
+  .btn-primary{background:var(--interactive-primary);color:var(--text-primary-contrast);width:100%;}
+  .btn-primary:hover{background:var(--interactive-hover);}
+  .btn-primary:disabled{background:var(--interactive-disabled-bg);color:var(--text-disable);cursor:not-allowed;}
+  .btn-tertiary{background:transparent;color:var(--interactive-primary);}
+  .btn-tertiary:hover{background:var(--interactive-primary-bg);}
+
+  /* session bar + tabs */
+  .session-bar{display:flex;align-items:center;justify-content:space-between;background:var(--bg-default);
+    border:1px solid var(--border-light);border-radius:var(--radius-default);padding:var(--space-12) var(--space-16);
+    margin-bottom:var(--space-12);box-shadow:var(--elevation-1);}
+  .chips{display:flex;gap:var(--space-8);flex-wrap:wrap;}
+  .chip{display:inline-flex;align-items:center;gap:6px;background:var(--acqua-900);color:var(--interactive-primary);
+    border-radius:var(--radius-pill);padding:4px 12px;font-size:13px;font-weight:600;}
+  .tabs{display:flex;background:var(--bg-default);border:1px solid var(--border-light);border-radius:var(--radius-default);
+    padding:var(--space-4);gap:2px;margin-bottom:var(--space-16);box-shadow:var(--elevation-1);overflow:hidden;}
+  .tab{flex:1;background:transparent;border:none;padding:10px 8px;font-family:var(--font-ui);font-size:13px;font-weight:600;
+    color:var(--text-disable);cursor:pointer;border-radius:var(--radius-sm);transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:3px;line-height:1.15;}
+  .tab span{font-size:18px;}
+  .tab:hover{color:var(--interactive-primary);background:var(--interactive-primary-bg);}
+  .tab.active{color:var(--interactive-primary);background:var(--interactive-hover-bg);}
+  .mech-note{font-size:13px;color:var(--text-secondary);margin-bottom:var(--space-16);padding:0 var(--space-4);}
+  .mech-note strong{color:var(--text-primary);}
+
+  /* question card */
+  .qcard{background:var(--bg-default);border:1px solid var(--border-light);border-radius:var(--radius-default);
+    padding:var(--space-24);box-shadow:var(--elevation-1);margin-bottom:var(--space-12);}
+  .pill{display:inline-flex;align-items:center;gap:6px;background:var(--support-magenta-6);color:var(--support-magenta-1);
+    border-radius:var(--radius-pill);padding:4px 12px;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+    margin-bottom:var(--space-12);}
+  .qtext{font-size:18px;font-weight:700;line-height:1.3;color:var(--text-primary);}
+  .qsub{font-size:13px;color:var(--text-secondary);margin-top:var(--space-4);margin-bottom:var(--space-16);}
+  .qcount{font-size:12px;font-weight:700;color:var(--text-disable);float:right;}
+
+  /* BINARY — input */
+  .binary-row{display:flex;gap:var(--space-12);}
+  .opt-btn{flex:1;background:var(--bg-default);border:1.5px solid var(--border-light);border-radius:var(--radius-sm);
+    padding:14px;font-family:var(--font-ui);font-size:15px;font-weight:600;color:var(--text-primary);cursor:pointer;
+    transition:border-color .15s,background .15s;text-align:center;}
+  .opt-btn:hover{border-color:var(--interactive-primary);background:var(--interactive-primary-bg);}
+  /* BINARY — diverging result bar */
+  .diverge{display:flex;height:46px;border-radius:var(--radius-sm);overflow:hidden;}
+  .seg{display:flex;align-items:center;color:var(--text-primary-contrast);font-size:14px;font-weight:700;
+    white-space:nowrap;overflow:hidden;transition:width .55s ease;}
+  .seg-dis{background:var(--support-magenta-1);justify-content:flex-start;padding-left:var(--space-16);}
+  .seg-agr{background:var(--interactive-primary);justify-content:flex-end;padding-right:var(--space-16);}
+  .seg.me{box-shadow:inset 0 0 0 3px rgba(255,255,255,.65);}
+
+  /* PAIRWISE — fill cards */
+  .pair-grid{display:grid;grid-template-columns:1fr auto 1fr;gap:var(--space-12);align-items:stretch;}
+  .pvs{align-self:center;width:34px;height:34px;border-radius:50%;background:var(--bg-default);border:1px solid var(--border-light);
+    display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--text-disable);text-transform:uppercase;}
+  .pcard{position:relative;overflow:hidden;background:var(--bg-default);border:1.5px solid var(--border-light);
+    border-radius:var(--radius-md);min-height:148px;padding:var(--space-16);cursor:pointer;
+    display:flex;flex-direction:column;align-items:center;text-align:center;transition:border-color .15s,background .15s;}
+  .pcard.clickable:hover{border-color:var(--interactive-primary);background:var(--interactive-primary-bg);}
+  .pcard.sel{border:2px solid var(--interactive-primary);}
+  .pfill{position:absolute;left:0;right:0;bottom:0;height:0;background:var(--acqua-900);transition:height .6s ease;z-index:0;}
+  .ptitle{position:relative;z-index:1;font-size:18px;font-weight:700;color:var(--text-primary);margin-top:var(--space-8);}
+  .ppick{position:relative;z-index:2;display:inline-block;background:var(--interactive-primary);color:var(--text-primary-contrast);
+    font-size:11px;font-weight:700;border-radius:var(--radius-pill);padding:3px 10px;margin-bottom:var(--space-4);}
+  .ppct{position:relative;z-index:1;margin-top:auto;font-size:26px;font-weight:700;color:var(--interactive-primary);}
+  .phint{position:relative;z-index:1;margin-top:auto;font-size:12px;color:var(--text-disable);}
+
+  /* SINGLE — BuzzFeed boxes */
+  .bf-q{background:var(--bg-default);color:var(--text-primary);border:1px solid var(--border-light);border-radius:var(--radius-md);
+    padding:var(--space-16) var(--space-24);font-size:18px;font-weight:700;line-height:1.3;margin-bottom:var(--space-12);}
+  .bf-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-12);}
+  .bf-tile{position:relative;overflow:hidden;border:none;border-radius:var(--radius-md);min-height:92px;cursor:pointer;
+    color:var(--text-primary);font-family:var(--font-ui);font-weight:700;font-size:18px;line-height:1.2;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:var(--space-16) var(--space-12);
+    transition:transform .12s ease,filter .12s ease;}
+  .bf-tile.a{background:var(--bg-default);border:1.5px solid var(--border-main);}
+  .bf-tile.b{background:var(--bg-default);border:1.5px solid var(--border-main);}
+  .bf-tile.clickable:hover{border-color:var(--interactive-primary);background:var(--interactive-primary-bg);}
+  .bf-tile .bf-label{position:relative;z-index:1;}
+  .bf-fill{position:absolute;left:0;right:0;bottom:0;height:0;background:var(--acqua-900);transition:height .6s ease;z-index:0;}
+  .bf-pct{position:relative;z-index:1;font-size:22px;font-weight:700;margin-top:6px;color:var(--interactive-primary);}
+  .bf-tile.picked{border-color:var(--interactive-primary);outline:2px solid var(--interactive-primary);outline-offset:-3px;}
+  .bf-chip{position:absolute;top:6px;right:6px;z-index:2;background:var(--interactive-primary);color:var(--text-primary-contrast);
+    font-size:10px;font-weight:700;border-radius:var(--radius-pill);padding:2px 8px;text-transform:uppercase;letter-spacing:.03em;}
+
+  /* EMOJI (unchanged) */
+  .emoji-row{display:flex;gap:var(--space-8);justify-content:space-between;}
+  .emoji-btn{flex:1;background:var(--bg-default);border:1.5px solid var(--border-light);border-radius:var(--radius-md);
+    padding:12px 4px;cursor:pointer;transition:border-color .15s,background .15s;display:flex;flex-direction:column;align-items:center;gap:6px;}
+  .emoji-btn:hover{border-color:var(--interactive-primary);background:var(--interactive-primary-bg);}
+  .emoji-btn .em{font-size:26px;line-height:1;}
+  .emoji-btn .el{font-size:11px;font-weight:600;color:var(--text-secondary);}
+  .res-row{margin-bottom:var(--space-12);}
+  .res-top{display:flex;justify-content:space-between;align-items:baseline;font-size:14px;margin-bottom:6px;gap:var(--space-12);}
+  .res-label{font-weight:600;color:var(--text-primary);display:flex;align-items:center;gap:6px;}
+  .res-pct{font-weight:700;color:var(--text-secondary);white-space:nowrap;}
+  .res-label.mine .res-tag{font-size:11px;font-weight:700;color:var(--interactive-primary);background:var(--acqua-900);border-radius:var(--radius-xs);padding:1px 6px;}
+  .bar-track{height:10px;background:var(--bg-offpaper);border-radius:var(--radius-pill);overflow:hidden;}
+  .bar-fill{height:100%;border-radius:var(--radius-pill);background:var(--support-aqua-1);transition:width .5s ease;width:0;}
+  .bar-fill.mine{background:var(--interactive-primary);}
+  .bar-fill.alt{background:var(--support-magenta-1);}
+
+  /* shared result footer */
+  .summary{font-size:14px;color:var(--text-primary);margin-top:var(--space-16);}
+  .summary b{font-weight:700;}
+  .insight{display:flex;gap:var(--space-8);align-items:flex-start;background:var(--interactive-primary-bg);
+    border-radius:var(--radius-sm);padding:var(--space-12) var(--space-16);margin-top:var(--space-12);}
+  .insight .ii{font-size:16px;line-height:1.4;flex-shrink:0;}
+  .insight p{font-size:13px;color:var(--info-text);line-height:1.5;}
+  .insight p b{color:var(--text-primary);}
+  .total-line{font-size:12px;color:var(--text-disable);margin-top:var(--space-12);text-align:right;}
+
+  .session-end{background:var(--success-bg);border:1px solid var(--success);border-radius:var(--radius-default);
+    padding:var(--space-24);text-align:center;margin-top:var(--space-12);}
+  .session-end h3{font-size:18px;color:var(--success-text);margin-bottom:var(--space-8);}
+  .session-end p{font-size:14px;color:var(--success-text);}
+  .footnote{font-size:11px;color:var(--text-disable);text-align:center;margin-top:var(--space-24);line-height:1.5;}
+  .hidden{display:none;}
+  @media (max-width:520px){
+    .cat-grid{grid-template-columns:1fr;}
+    .book-grid{grid-template-columns:1fr;}
+    .pair-grid{grid-template-columns:1fr;} .pvs{justify-self:center;}
+    .emoji-btn .el{display:none;}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="page-head">
+    <h1 class="page-title">Polls Playground</h1>
+    <p class="page-sub">A sandbox for pressure-testing the Polls feature — not a UI proposal, but a space to explore question formats, categories, and session lengths. Choosing a book, a category, and a session length generates a playground where the same takes run through all four poll formats, making it easy to compare how each one performs.</p>
+  </div>
+
+  <!-- SETUP -->
+  <div class="setup" id="setup">
+    <div class="step-label"><span class="step-num">1</span> Pick a book</div>
+    <div class="book-grid" id="bookGrid"></div>
+    <div class="step-label"><span class="step-num">2</span> Pick a category</div>
+    <div class="cat-grid" id="catGrid"></div>
+    <div class="step-label"><span class="step-num">3</span> Choose your session length</div>
+    <div class="len-row" id="lenRow"></div>
+    <button class="btn btn-primary" id="startBtn" disabled>Create polls playground</button>
+  </div>
+
+  <!-- SESSION -->
+  <div id="session" class="hidden">
+    <div class="session-bar">
+      <div class="chips" id="sessionChips"></div>
+      <button class="btn btn-tertiary" id="resetBtn" style="padding:6px 12px;font-size:13px;">Change</button>
+    </div>
+    <div class="tabs" id="tabs"></div>
+    <div class="mech-note" id="mechNote"></div>
+    <div id="questions"></div>
+    <div class="footnote">Vote counts shown are simulated sample data for this prototype — not real reader responses.<br>Insights are drawn from patterns in the Goodreads review set for this title.</div>
+  </div>
+
+</div>
+
+<script>
+const CATS=[
+  {id:'characters',icon:'👥',title:'Characters',desc:'Who you trust, relate to, and blame'},
+  {id:'verdict',icon:'⚖️',title:'Overall verdict',desc:'Is it the masterpiece they say?'},
+  {id:'ending',icon:'🌅',title:'Ending',desc:'Earned, hopeful, or too neat?'},
+  {id:'pacing',icon:'📈',title:'Plot & pacing',desc:'Page-turner or heavy going?'},
+];
+const LENGTHS=[{n:1,d:'Quick take'},{n:5,d:'Short session'},{n:10,d:'Deep dive'}];
+const MECHS=[
+  {id:'binary',icon:'⚖️',label:'Agree / Disagree',pill:'⇄ Binary',sub:'One tap. Pick a side.',
+   note:'<strong>Binary.</strong> One statement, two sides. Fastest signal, highest completion — best for sparking debate on contested takes.'},
+  {id:'pairwise',icon:'🆚',label:'This or That',pill:'⇄ Pairwise / This-or-that',sub:'Pick the one that matters more — no fence-sitting.',
+   note:'<strong>Pairwise.</strong> Forced choice between two options. Surfaces relative preference and produces clean ranking data.'},
+  {id:'emoji',icon:'😍',label:'Emoji Reaction',pill:'☻ Emoji reaction',sub:'React with the one that fits.',
+   note:'<strong>Emoji reaction.</strong> Low-effort emotional read on a character or moment. Great for capturing sentiment without words.'},
+  {id:'single',icon:'🔘',label:'Pick One',pill:'◉ Pick one',sub:'',
+   note:'<strong>Single choice.</strong> Four bold options, BuzzFeed-style. Richest segmentation data — maps tastes, themes, and reasons.'},
+];
+
+/* ====== QUESTION BANK — grounded in the Demon Copperhead review set ====== */
+const DATA={
+demon:{
+characters:{
+ binary:[
+  {q:"Demon's mother did the best she could with what she had.",opts:[{l:"Agree",v:1840},{l:"Disagree",v:1610}],insight:"Reviewers split almost evenly on her — sympathy for an addicted teen mother versus frustration at the harm. One of the book's most divisive characters."},
+  {q:"Fast Forward is the true villain of the story.",opts:[{l:"Agree",v:2180},{l:"Disagree",v:1090}],insight:"Many readers name him the human face of the predatory drug economy, more so than any single 'bad guy.'"},
+  {q:"Angus is the heart of the book, even more than Demon.",opts:[{l:"Agree",v:1490},{l:"Disagree",v:1760}],insight:"Angus is a fan favorite, but most still center Demon — his voice is what reviews praise most."},
+  {q:"Mr. Armstrong is the moral compass Demon needed.",opts:[{l:"Agree",v:2410},{l:"Disagree",v:680}],insight:"His Appalachian-history lessons resonate; readers cite him as the adult who reframes Demon's worth."},
+  {q:"Dori never had a real chance at recovery.",opts:[{l:"Agree",v:2030},{l:"Disagree",v:960}],insight:"Her arc is read as a structural tragedy of the opioid crisis rather than personal failure."},
+  {q:"Demon would have made it out fine without the Peggots.",opts:[{l:"Agree",v:520},{l:"Disagree",v:2640}],insight:"Strong consensus that the Peggots' early kindness is foundational — supports a 'who showed up' theme."},
+  {q:"U-Haul is more unsettling than Fast Forward.",opts:[{l:"Agree",v:1180},{l:"Disagree",v:1720}],insight:"Splits readers — quiet creeping menace versus overt harm. Useful for character-affinity nuance."},
+  {q:"Coach Winfield cared about Demon, not just the team.",opts:[{l:"Agree",v:1310},{l:"Disagree",v:1690}],insight:"Skews skeptical — many read the coach's interest as conditional on football performance."},
+  {q:"Maggot deserved a better ending than he got.",opts:[{l:"Agree",v:2290},{l:"Disagree",v:540}],insight:"Readers carry real affection for Maggot; his fate is a recurring source of heartbreak."},
+  {q:"Demon's narrating voice is what makes you love him.",opts:[{l:"Agree",v:2880},{l:"Disagree",v:310}],insight:"The clearest near-consensus in the set — the first-person voice is the most-praised element by far."},
+ ],
+ pairwise:[
+  {q:"Who was better for Demon?",opts:[{l:"Angus",v:2210},{l:"Dori",v:980}],insight:"Angus wins decisively — readers frame her as steadying where Dori pulls him under."},
+  {q:"Who gave Demon a real home?",opts:[{l:"The Peggots",v:1870},{l:"Coach Winfield",v:1290}],insight:"The Peggots edge it: unconditional care beats the conditional belonging of the football house."},
+  {q:"Who did Demon the most harm?",opts:[{l:"Fast Forward",v:2040},{l:"U-Haul",v:1120}],insight:"Fast Forward leads as the active corrupter; U-Haul registers as the colder enabler."},
+  {q:"Who failed Demon more?",opts:[{l:"His mother",v:1380},{l:"Stoner",v:1980}],insight:"Stoner draws more blame — readers extend more grace to his mother's circumstances."},
+  {q:"Most influential mentor?",opts:[{l:"Mr. Armstrong",v:2150},{l:"Coach Winfield",v:980}],insight:"Armstrong's influence is seen as formative; the coach's as transactional."},
+  {q:"Which friendship mattered more?",opts:[{l:"Maggot",v:1760},{l:"Tommy",v:1310}],insight:"Maggot's childhood bond narrowly outweighs Tommy's steadier adult loyalty."},
+  {q:"Who fought hardest for these kids?",opts:[{l:"June",v:1520},{l:"Mr. Armstrong",v:1640}],insight:"Near tie — June on the medical front, Armstrong on the moral one. Both read as rare good adults."},
+  {q:"Whose downfall hit harder?",opts:[{l:"Emmy",v:1410},{l:"Dori",v:1790}],insight:"Dori's slow loss lands hardest; Emmy's is the wider warning that no one is safe."},
+  {q:"Which Demon did you root for more?",opts:[{l:"Young Demon",v:1680},{l:"Grown Demon",v:1490}],insight:"A close call — the wounded kid versus the survivor finding his way out."},
+  {q:"Who knew the real Demon?",opts:[{l:"Angus",v:1980},{l:"Maggot",v:1180}],insight:"Angus is seen as the one who truly sees him by the end."},
+ ],
+ emoji:[
+  {q:"How do you feel about Fast Forward?",opts:[{em:"😍",l:"Magnetic",v:410},{em:"😐",l:"Wary",v:680},{em:"😟",l:"Sad for him",v:560},{em:"🤬",l:"Furious",v:1640}],insight:"Anger dominates, but a notable minority find him magnetic — exactly the pull the novel critiques."},
+  {q:"React to Demon's mother.",opts:[{em:"💔",l:"Heartbroken",v:1720},{em:"😢",l:"Grieving",v:980},{em:"😐",l:"Conflicted",v:740},{em:"😤",l:"Frustrated",v:560}],insight:"Overwhelmingly grief, not blame — echoing reviews that read her as a victim of the same crisis."},
+  {q:"React to Angus.",opts:[{em:"🥹",l:"Adore her",v:1880},{em:"❤️",l:"Love",v:920},{em:"😌",l:"Comforted",v:640},{em:"👏",l:"Respect",v:560}],insight:"Almost entirely warm — Angus is the reader's safe harbor in a brutal story."},
+  {q:"React to U-Haul.",opts:[{em:"😬",l:"Uneasy",v:1340},{em:"🤢",l:"Repulsed",v:980},{em:"😡",l:"Angry",v:720},{em:"🙄",l:"Done with him",v:560}],insight:"Discomfort, not rage — readers register him as a slow-burn threat."},
+  {q:"React to Mr. Armstrong.",opts:[{em:"🙏",l:"Grateful",v:1460},{em:"👏",l:"Admire",v:980},{em:"❤️",l:"Love",v:720},{em:"😌",l:"Reassured",v:520}],insight:"Pure gratitude — the teacher who tells these kids their story has worth."},
+  {q:"React to Dori's storyline.",opts:[{em:"💔",l:"Devastated",v:2010},{em:"😭",l:"Wept",v:880},{em:"😟",l:"Anxious",v:520},{em:"😞",l:"Hopeless",v:430}],insight:"The most uniformly painful reaction in the character set."},
+  {q:"React to the Peggots.",opts:[{em:"🥰",l:"Warmth",v:1620},{em:"🏡",l:"Home",v:980},{em:"😌",l:"Safe",v:640},{em:"🙏",l:"Grateful",v:540}],insight:"The book's rare pocket of safety — readers respond to them as 'home.'"},
+  {q:"React to Coach Winfield.",opts:[{em:"🤔",l:"Skeptical",v:1180},{em:"😐",l:"Mixed",v:920},{em:"👍",l:"Approve",v:680},{em:"😕",l:"Let down",v:740}],insight:"The most ambivalent reactions — affection shadowed by his use of Demon."},
+  {q:"React to Stoner.",opts:[{em:"😡",l:"Hate him",v:1980},{em:"🤬",l:"Rage",v:920},{em:"😤",l:"Contempt",v:520},{em:"👊",l:"Justice please",v:480}],insight:"Near-universal anger — the clearest 'villain you love to hate.'"},
+  {q:"React to Tommy.",opts:[{em:"😊",l:"Fond",v:1280},{em:"🤝",l:"Loyal friend",v:980},{em:"😢",l:"Tender",v:560},{em:"😌",l:"Soft spot",v:620}],insight:"Quiet affection — Tommy is the gentle, grounding presence many readers treasure."},
+ ],
+ single:[
+  {q:"Which character do you relate to most?",opts:[{l:"Demon",v:1840},{l:"Angus",v:980},{l:"Maggot",v:420},{l:"Tommy",v:360}],insight:"Demon's voice makes him the default point of identification; Angus is the strong second."},
+  {q:"Who is most responsible for Demon's hardest years?",opts:[{l:"The welfare system",v:1380},{l:"Big Pharma",v:1120},{l:"Stoner",v:620},{l:"His mother",v:480}],insight:"Most readers point at systems, not individuals — the reading the novel argues for, and a counter to 'stereotype' critiques."},
+  {q:"Which character would you most want as a friend?",opts:[{l:"Angus",v:1920},{l:"Maggot",v:680},{l:"Tommy",v:520},{l:"June",v:440}],insight:"Angus runs away with it — loyal, funny, sharp. A clean personalization signal."},
+  {q:"Who changed the most over the book?",opts:[{l:"Demon",v:1680},{l:"Emmy",v:780},{l:"Angus",v:460},{l:"Fast Forward",v:520}],insight:"Demon's transformation anchors it, but Emmy's fall is the change that unsettles readers most."},
+  {q:"Which character broke your heart most?",opts:[{l:"Dori",v:1340},{l:"His mother",v:820},{l:"Emmy",v:680},{l:"Maggot",v:760}],insight:"Dori leads the heartbreak — her arc is the emotional gut-punch readers cite most."},
+  {q:"Who did you trust least?",opts:[{l:"Fast Forward",v:1280},{l:"U-Haul",v:1180},{l:"Stoner",v:680},{l:"The McCobbs",v:420}],insight:"Fast Forward and U-Haul run neck and neck — overt versus covert danger."},
+  {q:"Which adult actually showed up for Demon?",opts:[{l:"Mrs. Peggot",v:1180},{l:"Mr. Armstrong",v:1040},{l:"June",v:680},{l:"Coach Winfield",v:420}],insight:"The good-adult vote spreads across names — the book's argument that survival takes a village."},
+  {q:"Whose point of view would you most want next?",opts:[{l:"Angus",v:1480},{l:"June",v:720},{l:"Maggot",v:680},{l:"Emmy",v:560}],insight:"Angus tops the spin-off wishlist — strong signal for companion content."},
+  {q:"Which character felt most real to you?",opts:[{l:"Demon",v:1620},{l:"Angus",v:780},{l:"Dori",v:620},{l:"Mr. Armstrong",v:520}],insight:"Demon's lived-in voice makes him feel most real — the craft achievement reviewers return to."},
+  {q:"If Demon had one person to lean on?",opts:[{l:"Angus",v:1580},{l:"Mrs. Peggot",v:720},{l:"Mr. Armstrong",v:620},{l:"June",v:380}],insight:"Readers want Angus in his corner — confirming her as the relationship that should endure."},
+ ],
+},
+verdict:{
+ binary:[
+  {q:"Demon Copperhead deserved the Pulitzer.",opts:[{l:"Agree",v:2680},{l:"Disagree",v:610}],insight:"Strong agreement — the award comes up often and mostly approvingly in reviews."},
+  {q:"The David Copperfield retelling enhanced the book rather than constraining it.",opts:[{l:"Agree",v:2240},{l:"Disagree",v:920}],insight:"The Dickens framing is discussed in ~40% of reviews; most see it as a feature, a vocal minority as a cage."},
+  {q:"The novel portrays Appalachia with respect, not caricature.",opts:[{l:"Agree",v:2120},{l:"Disagree",v:1040}],insight:"This is THE controversy — about a third of reviews raise the stereotype question. Majority defend it; dissent is loud."},
+  {q:"This is a book everyone should read.",opts:[{l:"Agree",v:2310},{l:"Disagree",v:880}],insight:"High recommend-rate, tempered by readers who flag how heavy the content is."},
+  {q:"The opioid-crisis material felt earned, not preachy.",opts:[{l:"Agree",v:2060},{l:"Disagree",v:1090}],insight:"Most found it integral; a real minority felt lectured — a recurring 'message vs. story' tension."},
+  {q:"I'd happily read this again.",opts:[{l:"Agree",v:1340},{l:"Disagree",v:1810}],insight:"Loved but not re-read — its bleakness makes many call it a 'once is enough' masterpiece."},
+  {q:"It's too long for the story it tells.",opts:[{l:"Agree",v:1120},{l:"Disagree",v:2090}],insight:"Length complaints are a real but minority note (~12% of reviews)."},
+  {q:"Kingsolver earned the emotional payoff.",opts:[{l:"Agree",v:2520},{l:"Disagree",v:560}],insight:"Broad agreement that the ending is earned rather than manipulative."},
+  {q:"Knowing David Copperfield first makes this better.",opts:[{l:"Agree",v:1180},{l:"Disagree",v:1920}],insight:"Most say it stands fully on its own — useful for positioning to non-classics readers."},
+  {q:"This is the best thing Kingsolver has written.",opts:[{l:"Agree",v:1490},{l:"Disagree",v:1460}],insight:"Dead split against The Poisonwood Bible — a recurring head-to-head in reviews."},
+ ],
+ pairwise:[
+  {q:"Which would you recommend first?",opts:[{l:"Demon Copperhead",v:2380},{l:"David Copperfield",v:760}],insight:"The modern retelling wins handily as an entry point."},
+  {q:"What carried the book?",opts:[{l:"Story & characters",v:2010},{l:"The social message",v:1180}],insight:"Readers credit the human story first — the message lands because the characters do."},
+  {q:"Which word fits it better?",opts:[{l:"Heartbreaking",v:1980},{l:"Hopeful",v:1280}],insight:"Heartbreaking dominates, but enough land on hopeful to make it both."},
+  {q:"What kept you reading?",opts:[{l:"Demon's voice",v:2240},{l:"The plot",v:920}],insight:"Voice over plot — consistent with voice being the single most-praised element."},
+  {q:"Where does it land?",opts:[{l:"A masterpiece",v:2060},{l:"A very good book",v:1090}],insight:"Skews to masterpiece, matching the 4.2 average and 55% five-star share."},
+  {q:"Who'll love it more?",opts:[{l:"Literary readers",v:1740},{l:"General readers",v:1380}],insight:"Edges literary, but its accessible voice broadens the audience."},
+  {q:"How did it work best?",opts:[{l:"A faithful retelling",v:980},{l:"Its own thing",v:2180}],insight:"Most experience it as a standalone that happens to echo Dickens."},
+  {q:"Which half was stronger?",opts:[{l:"The first half",v:1480},{l:"The second half",v:1640}],insight:"A close split — childhood hardship versus the addiction-and-recovery arc."},
+  {q:"Kingsolver's best?",opts:[{l:"Demon Copperhead",v:1620},{l:"Poisonwood Bible",v:1510}],insight:"The defining Kingsolver debate, and it's essentially a coin flip."},
+  {q:"What's the real draw?",opts:[{l:"The characters",v:1880},{l:"The issues",v:1240}],insight:"Characters first — the issues stick because readers care about the people."},
+ ],
+ emoji:[
+  {q:"Your overall reaction to the book?",opts:[{em:"😍",l:"Loved it",v:1880},{em:"😊",l:"Liked it",v:880},{em:"😐",l:"Mixed",v:520},{em:"😞",l:"Not for me",v:380}],insight:"Sentiment skews strongly positive, mirroring the rating distribution."},
+  {q:"How did the ending leave you feeling?",opts:[{em:"🥹",l:"Moved",v:1620},{em:"🙂",l:"Satisfied",v:920},{em:"😌",l:"At peace",v:640},{em:"😔",l:"Heavy",v:540}],insight:"Mostly moved and satisfied — the hopeful note lands for the majority."},
+  {q:"React to the Dickens retelling concept.",opts:[{em:"🤓",l:"Clever",v:1280},{em:"👏",l:"Brilliant",v:980},{em:"🤔",l:"Curious",v:680},{em:"😒",l:"Gimmicky",v:560}],insight:"Mostly admiration, with a skeptical tail that finds the conceit too engineered."},
+  {q:"How emotionally wrung-out were you?",opts:[{em:"😭",l:"Wrecked",v:1480},{em:"😢",l:"Teary",v:920},{em:"😮‍💨",l:"Drained",v:740},{em:"😐",l:"Held up fine",v:480}],insight:"Most readers report real emotional cost — this is a heavy read."},
+  {q:"Would you recommend it?",opts:[{em:"🙌",l:"Absolutely",v:1820},{em:"👍",l:"Yes",v:920},{em:"🤷",l:"With caveats",v:680},{em:"👎",l:"No",v:240}],insight:"High recommend-rate; the 'with caveats' group flags the heavy content."},
+  {q:"React to the book's length.",opts:[{em:"⏳",l:"Felt long",v:680},{em:"😌",l:"Just right",v:1280},{em:"😮‍💨",l:"A bit much",v:740},{em:"🥱",l:"Too long",v:420}],insight:"Most made peace with the length; complaints are a vocal minority."},
+  {q:"React to its take on Appalachia.",opts:[{em:"🙏",l:"Honors it",v:1480},{em:"👏",l:"Powerful",v:880},{em:"🤔",l:"Unsure",v:640},{em:"😕",l:"Uneasy",v:680}],insight:"Mostly affirming, but the 'uneasy' slice is the authenticity debate showing up as feeling."},
+  {q:"How likely to think about this for weeks?",opts:[{em:"🧠",l:"Can't stop",v:1620},{em:"💭",l:"Often",v:920},{em:"🙂",l:"Sometimes",v:560},{em:"😐",l:"Rarely",v:380}],insight:"Strong stickiness — a hallmark of the books readers rate highest."},
+  {q:"React to it winning the Pulitzer.",opts:[{em:"🏆",l:"Earned",v:1880},{em:"👏",l:"Deserved",v:880},{em:"🤔",l:"Sure",v:520},{em:"🙄",l:"Overrated",v:340}],insight:"Award approval is high; the 'overrated' tail is small but present."},
+  {q:"Sum up the experience.",opts:[{em:"❤️‍🩹",l:"Painful & healing",v:1620},{em:"💔",l:"Just painful",v:680},{em:"🌅",l:"Hopeful",v:1080},{em:"😌",l:"Worth it",v:620}],insight:"'Painful and healing' captures the dominant read — hurt that leaves you better for it."},
+ ],
+ single:[
+  {q:"Your overall rating?",opts:[{l:"Loved it (5★)",v:1820},{l:"Liked it (4★)",v:960},{l:"It was okay (3★)",v:420},{l:"Not for me (1–2★)",v:270}],insight:"Mirrors the real set: ~55% five-star, ~23% four-star, average around 4.2."},
+  {q:"The single best thing about it?",opts:[{l:"Demon's voice",v:1980},{l:"The characters",v:820},{l:"The social truth",v:680},{l:"The ending",v:380}],insight:"Voice wins decisively — the strongest, most repeated praise across reviews."},
+  {q:"Who would you recommend this to?",opts:[{l:"Okay with hard topics",v:1240},{l:"Literary-fiction fans",v:1080},{l:"Everyone",v:980},{l:"Book clubs",v:680}],insight:"The biggest segment qualifies the rec by content-heaviness — a real recommendation nuance."},
+  {q:"The retelling was…",opts:[{l:"Brilliant",v:1480},{l:"Clever",v:1080},{l:"Unnecessary",v:420},{l:"Distracting",v:280}],insight:"Mostly brilliant/clever; a quarter found the Dickens scaffolding non-essential."},
+  {q:"The opioid storyline was…",opts:[{l:"Devastating & needed",v:1820},{l:"Powerful",v:920},{l:"A bit heavy-handed",v:520},{l:"Too much",v:280}],insight:"Strongly affirming, with a 'message-fatigue' tail consistent with the preachiness debate."},
+  {q:"If you could change one thing?",opts:[{l:"Make it shorter",v:880},{l:"More side characters",v:780},{l:"Less bleak",v:980},{l:"Nothing",v:1180}],insight:"'Nothing' leads, but bleakness and length are the top requested edits."},
+  {q:"How did it compare to the hype?",opts:[{l:"Exceeded it",v:1380},{l:"Met it",v:1240},{l:"Fell short",v:480},{l:"Didn't get it",v:340}],insight:"Mostly met-or-exceeded — rare for a heavily-hyped literary title."},
+  {q:"Best word for it?",opts:[{l:"Heartbreaking",v:1280},{l:"Hopeful",v:680},{l:"Important",v:980},{l:"Exhausting",v:520}],insight:"Heartbreaking and important lead — the twin poles of how readers frame it."},
+  {q:"Would you re-read it?",opts:[{l:"Definitely",v:680},{l:"Maybe someday",v:1080},{l:"Probably not",v:980},{l:"Never again",v:520}],insight:"Skews against re-reading despite the love — the 'too heavy to revisit' pattern."},
+  {q:"Where does it rank for your year?",opts:[{l:"Best of the year",v:1280},{l:"Top 5",v:1080},{l:"Solid",v:620},{l:"Forgettable",v:140}],insight:"A standout for most — over half place it in their year's top tier."},
+ ],
+},
+ending:{
+ binary:[
+  {q:"The ending felt earned, not convenient.",opts:[{l:"Agree",v:2280},{l:"Disagree",v:880}],insight:"Most defend the resolution as hard-won; a minority echo the 'too tidy' critique."},
+  {q:"Demon's recovery was believable.",opts:[{l:"Agree",v:2140},{l:"Disagree",v:980}],insight:"Largely convincing, though some readers wanted the relapse-prone reality to bite harder."},
+  {q:"The ending was as hopeful as it could honestly be.",opts:[{l:"Agree",v:2360},{l:"Disagree",v:720}],insight:"Strong agreement — 'earned hope' is the dominant framing of the close."},
+  {q:"I wanted more closure on the side characters.",opts:[{l:"Agree",v:1980},{l:"Disagree",v:1140}],insight:"A real appetite for more — supports companion or 'where are they now' content."},
+  {q:"Dori's fate was the right call for the story.",opts:[{l:"Agree",v:1620},{l:"Disagree",v:1480}],insight:"Painfully split — readers accept its truth while wishing it otherwise."},
+  {q:"The ocean was the perfect closing image.",opts:[{l:"Agree",v:2010},{l:"Disagree",v:980}],insight:"The ocean scene resonates widely; a few find it a touch on-the-nose."},
+  {q:"The ending wrapped up too neatly.",opts:[{l:"Agree",v:980},{l:"Disagree",v:2160}],insight:"Most reject 'too neat' — they read the close as restrained, not pat."},
+  {q:"I saw the ending coming from early on.",opts:[{l:"Agree",v:1240},{l:"Disagree",v:1840}],insight:"The Dickens template telegraphs some beats, but most still found the close affecting."},
+  {q:"Angus and Demon's ending was the payoff I wanted.",opts:[{l:"Agree",v:2280},{l:"Disagree",v:640}],insight:"Their resolution is the emotional reward readers were rooting for."},
+  {q:"The final chapters justified the long road there.",opts:[{l:"Agree",v:2120},{l:"Disagree",v:780}],insight:"The payoff is widely judged worth the heavy journey."},
+ ],
+ pairwise:[
+  {q:"Which describes the ending?",opts:[{l:"Hopeful",v:1680},{l:"Bittersweet",v:1620}],insight:"A near-perfect split — the close is read as genuinely both."},
+  {q:"How did the resolution feel?",opts:[{l:"Earned",v:2280},{l:"Convenient",v:820}],insight:"Earned wins clearly — the central question this category exists to settle."},
+  {q:"Which landed harder?",opts:[{l:"Demon's recovery",v:1480},{l:"Dori's fate",v:1780}],insight:"Loss outweighs triumph emotionally — Dori's fate is the heavier note."},
+  {q:"The better ending beat?",opts:[{l:"The ocean scene",v:1620},{l:"Reuniting with Angus",v:1580}],insight:"Almost tied — landscape catharsis versus human connection."},
+  {q:"Your gut reaction to the close?",opts:[{l:"Satisfying",v:2180},{l:"Frustrating",v:780}],insight:"Predominantly satisfying — frustration tracks with the 'wanted more closure' group."},
+  {q:"What did you want?",opts:[{l:"Tie it up neatly",v:1280},{l:"Leave it open",v:1740}],insight:"Most preferred the restraint of an open-ish finish to full closure."},
+  {q:"Which is stronger?",opts:[{l:"The ending",v:1640},{l:"The beginning",v:1480}],insight:"A slight edge to the ending — the payoff outweighs even the gripping open."},
+  {q:"How did the ending track?",opts:[{l:"Predictable",v:1180},{l:"Surprising",v:1620}],insight:"More surprising than not, despite the borrowed Dickens architecture."},
+  {q:"What stayed with you?",opts:[{l:"Demon's future",v:1740},{l:"Those left behind",v:1480}],insight:"Hope for Demon edges out grief for the lost — but both linger."},
+  {q:"The final stretch?",opts:[{l:"Too long getting there",v:980},{l:"Worth the wait",v:2240}],insight:"Strongly 'worth the wait' — the long road is largely forgiven by the close."},
+ ],
+ emoji:[
+  {q:"React to the final chapter.",opts:[{em:"🥹",l:"Moved",v:1820},{em:"🌅",l:"Hopeful",v:980},{em:"😌",l:"At peace",v:680},{em:"😔",l:"Heavy",v:420}],insight:"Mostly moved and hopeful — the close earns a genuine emotional release."},
+  {q:"How did Dori's storyline end for you?",opts:[{em:"💔",l:"Broken",v:2010},{em:"😭",l:"Devastated",v:880},{em:"😞",l:"Hopeless",v:520},{em:"😢",l:"Tearful",v:640}],insight:"The single most painful beat readers carry out of the book."},
+  {q:"React to Demon getting clean.",opts:[{em:"🙌",l:"Relief",v:1720},{em:"👏",l:"Proud",v:980},{em:"🥹",l:"Emotional",v:780},{em:"😌",l:"Hopeful",v:640}],insight:"Relief leads — readers exhale with him after the long descent."},
+  {q:"The ocean scene made you feel…",opts:[{em:"🌊",l:"Awe",v:1280},{em:"😌",l:"Calm",v:980},{em:"🥲",l:"Tearful joy",v:1080},{em:"✨",l:"Released",v:680}],insight:"A catharsis moment — the open horizon reads as freedom after confinement."},
+  {q:"React to where Angus and Demon end up.",opts:[{em:"❤️",l:"Love it",v:1820},{em:"🥹",l:"Tender",v:920},{em:"😊",l:"Happy",v:780},{em:"😌",l:"Content",v:560}],insight:"Warm across the board — the relationship payoff readers wanted."},
+  {q:"How satisfied with the close?",opts:[{em:"😌",l:"Very",v:1620},{em:"🙂",l:"Mostly",v:980},{em:"😐",l:"Mixed",v:560},{em:"😕",l:"Let down",v:380}],insight:"Satisfaction is high; the small 'let down' slice wanted fuller closure."},
+  {q:"React to the pacing of the ending.",opts:[{em:"😌",l:"Just right",v:1480},{em:"👍",l:"Good",v:980},{em:"😮‍💨",l:"Rushed",v:680},{em:"🥱",l:"Dragged",v:420}],insight:"Mostly well-judged, with a split between 'rushed' and 'dragged' at the edges."},
+  {q:"Did the ending surprise you?",opts:[{em:"😲",l:"Yes",v:980},{em:"🙂",l:"A little",v:1280},{em:"😐",l:"Not much",v:780},{em:"🥱",l:"Saw it coming",v:560}],insight:"Mild surprise dominates — the emotion lands even when the shape is foreseeable."},
+  {q:"Sum up the last 50 pages.",opts:[{em:"🥹",l:"Cathartic",v:1620},{em:"💔",l:"Bruising",v:680},{em:"🌅",l:"Hopeful",v:1080},{em:"😮‍💨",l:"Exhausting",v:420}],insight:"Cathartic and hopeful carry the close — the hurt resolves rather than just ending."},
+  {q:"How did you feel turning the last page?",opts:[{em:"😢",l:"Tearful",v:980},{em:"😌",l:"Settled",v:1280},{em:"🥹",l:"Full heart",v:1080},{em:"💭",l:"Lost in thought",v:680}],insight:"A settled, full-hearted close — the lingering kind readers remember."},
+ ],
+ single:[
+  {q:"How did the ending feel?",opts:[{l:"Earned",v:1820},{l:"Hopeful & real",v:1080},{l:"A bit too neat",v:520},{l:"Unsatisfying",v:240}],insight:"'Earned' and 'hopeful but realistic' together dominate — restraint over tidiness."},
+  {q:"Did the ending surprise you?",opts:[{l:"Completely",v:480},{l:"Somewhat",v:1280},{l:"Not really",v:980},{l:"Saw it coming",v:680}],insight:"Mostly partial surprise — the Dickens map sets expectations the emotion still beats."},
+  {q:"The most powerful ending beat?",opts:[{l:"Demon gets clean",v:1180},{l:"The ocean",v:980},{l:"Angus",v:880},{l:"Dori's fate",v:1080}],insight:"A four-way spread — proof the close lands on multiple fronts."},
+  {q:"Demon's recovery was…",opts:[{l:"Fully believable",v:1280},{l:"Mostly",v:1080},{l:"A bit convenient",v:580},{l:"Hard to buy",v:240}],insight:"Strongly credible, with a minority wanting recovery's setbacks foregrounded."},
+  {q:"What did you want more of?",opts:[{l:"Side-character fates",v:1280},{l:"Demon's future",v:880},{l:"Nothing, it was right",v:980},{l:"Less, it dragged",v:340}],insight:"Demand for side-character closure tops the list — a clear content opportunity."},
+  {q:"Best word for the ending?",opts:[{l:"Hopeful",v:1180},{l:"Bittersweet",v:1080},{l:"Redemptive",v:980},{l:"Abrupt",v:280}],insight:"Hope, bitterness, and redemption are near-balanced — the close holds all three."},
+  {q:"The ocean as a final image was…",opts:[{l:"Perfect",v:1280},{l:"Lovely",v:1080},{l:"On-the-nose",v:580},{l:"Lost on me",v:180}],insight:"Mostly beloved; the 'on-the-nose' note is the only real dissent."},
+  {q:"When did you sense how it ends?",opts:[{l:"From the start",v:680},{l:"Midway",v:980},{l:"Near the end",v:1180},{l:"It surprised me",v:680}],insight:"Most felt the shape only late — the journey holds tension despite the template."},
+  {q:"Did the ending change your view?",opts:[{l:"Raised it",v:1480},{l:"No change",v:1280},{l:"Lowered a little",v:380},{l:"Lowered a lot",v:120}],insight:"The ending lifts the book for the largest group — a strong finish effect."},
+  {q:"How long did the ending stay?",opts:[{l:"Still thinking",v:1280},{l:"A few days",v:1080},{l:"Briefly",v:480},{l:"Not really",v:180}],insight:"High persistence — the close is the part readers replay."},
+ ],
+},
+pacing:{
+ binary:[
+  {q:"The book earns its length.",opts:[{l:"Agree",v:2240},{l:"Disagree",v:980}],insight:"Most feel the page count is justified; ~12% of reviews push back on length."},
+  {q:"The relentless hardship started to feel like too much.",opts:[{l:"Agree",v:1480},{l:"Disagree",v:1720}],insight:"A genuine split — the 'bad to worse' pile-up tests some readers' stamina."},
+  {q:"I couldn't put it down despite the bleakness.",opts:[{l:"Agree",v:2080},{l:"Disagree",v:1040}],insight:"The voice creates real momentum even through painful material."},
+  {q:"The middle section dragged.",opts:[{l:"Agree",v:1180},{l:"Disagree",v:1980}],insight:"Most deny a saggy middle; where drag is felt, it's the foster-care stretch."},
+  {q:"The episodic, one-thing-after-another structure worked.",opts:[{l:"Agree",v:1820},{l:"Disagree",v:1180}],insight:"The Dickensian serial rhythm mostly works, though it can feel repetitive."},
+  {q:"The football arc was as gripping as the rest.",opts:[{l:"Agree",v:1680},{l:"Disagree",v:1280}],insight:"A reader favorite stretch — the rare run of momentum and hope."},
+  {q:"The addiction spiral was paced to feel inevitable.",opts:[{l:"Agree",v:2160},{l:"Disagree",v:740}],insight:"Readers credit the slow, dread-building descent as the book's pacing achievement."},
+  {q:"The Dickensian plot beats were easy to spot.",opts:[{l:"Agree",v:1380},{l:"Disagree",v:1620}],insight:"Mixed — classics readers clock the beats; others don't and don't mind."},
+  {q:"It could lose 100 pages and be stronger.",opts:[{l:"Agree",v:1240},{l:"Disagree",v:1880}],insight:"The trim camp is a real minority — the length debate in one line."},
+  {q:"The pacing pulled me through even the hardest parts.",opts:[{l:"Agree",v:2280},{l:"Disagree",v:680}],insight:"The voice-driven propulsion is widely credited for carrying the bleak stretches."},
+ ],
+ pairwise:[
+  {q:"Which was your experience?",opts:[{l:"Gripping",v:2040},{l:"Heavy going",v:1180}],insight:"Gripping leads, but 'heavy going' is a sizable, honest minority."},
+  {q:"Which moved faster?",opts:[{l:"The football years",v:1820},{l:"The addiction years",v:1340}],insight:"Football reads as the propulsive high; addiction as the slow, gripping dread."},
+  {q:"The book's length?",opts:[{l:"Too long",v:1080},{l:"Just right",v:2080}],insight:"'Just right' wins, but the 'too long' share is consistent with review chatter."},
+  {q:"How did it read?",opts:[{l:"Constant momentum",v:1680},{l:"Slow build",v:1480}],insight:"Slight edge to momentum — the voice keeps things moving."},
+  {q:"Which was better paced?",opts:[{l:"The first half",v:1480},{l:"The second half",v:1680}],insight:"The second half edges it — the addiction-and-recovery arc tightens the grip."},
+  {q:"What pulled you forward?",opts:[{l:"Demon's voice",v:2180},{l:"The plot",v:960}],insight:"Voice over plot again — the engine of the book's readability."},
+  {q:"Your verdict?",opts:[{l:"Earned every page",v:2080},{l:"Could be trimmed",v:1080}],insight:"Mostly 'earned every page,' with a steady trim-it minority."},
+  {q:"Which dragged less?",opts:[{l:"The bleak stretch",v:1180},{l:"The hopeful turn",v:1920}],insight:"The hopeful turn reads faster — relief accelerates the page-turning."},
+  {q:"How did the structure feel?",opts:[{l:"Propulsive",v:1740},{l:"Episodic",v:1420}],insight:"More propulsive than episodic for most, despite the serial-novel bones."},
+  {q:"How did you go through it?",opts:[{l:"Read it fast",v:1480},{l:"Paced myself",v:1680}],insight:"Many had to pace themselves — not from boredom but from emotional weight."},
+ ],
+ emoji:[
+  {q:"React to the book's pacing.",opts:[{em:"🏃",l:"Fast",v:1280},{em:"😌",l:"Steady",v:1480},{em:"🐢",l:"Slow",v:680},{em:"😮‍💨",l:"Uneven",v:420}],insight:"Steady and fast dominate — the voice keeps momentum despite the page count."},
+  {q:"How did the relentless hardship feel?",opts:[{em:"😮‍💨",l:"Heavy",v:1480},{em:"💔",l:"Painful",v:980},{em:"😣",l:"Too much",v:780},{em:"😐",l:"Bearable",v:640}],insight:"The accumulated hardship is felt physically — the core of the 'too bleak' note."},
+  {q:"React to the length.",opts:[{em:"⏳",l:"Felt long",v:780},{em:"😌",l:"Fine",v:1480},{em:"🥱",l:"Too long",v:520},{em:"😮‍💨",l:"A bit much",v:680}],insight:"Most made peace with it; the length complaints cluster in a vocal minority."},
+  {q:"The football arc kept you…",opts:[{em:"🤩",l:"Hooked",v:1280},{em:"👀",l:"Engaged",v:1080},{em:"🙂",l:"Mildly in",v:680},{em:"😐",l:"Indifferent",v:420}],insight:"A high-engagement stretch — the burst of hope and momentum readers savor."},
+  {q:"The addiction storyline read as…",opts:[{em:"😣",l:"Suffocating",v:1280},{em:"😢",l:"Wrenching",v:1080},{em:"😮‍💨",l:"Slow dread",v:980},{em:"😞",l:"Bleak",v:560}],insight:"The slow-dread pacing is doing exactly what the novel intends."},
+  {q:"React to the middle section.",opts:[{em:"😴",l:"Dragged",v:680},{em:"😐",l:"Steady",v:1080},{em:"🙂",l:"Engaging",v:1280},{em:"👍",l:"Strong",v:780}],insight:"Mostly engaging — the alleged 'saggy middle' isn't widely felt."},
+  {q:"How hard to keep going at points?",opts:[{em:"😮‍💨",l:"Needed breaks",v:1180},{em:"😣",l:"Tough",v:780},{em:"🙂",l:"Fine",v:1080},{em:"😌",l:"Easy",v:680}],insight:"Many needed breathing room — emotional difficulty, not boredom."},
+  {q:"React to the structure.",opts:[{em:"🧩",l:"Well-built",v:1280},{em:"👍",l:"Solid",v:1080},{em:"🤔",l:"Repetitive",v:680},{em:"😕",l:"Meandering",v:420}],insight:"Mostly admired construction; the 'repetitive' note is the episodic critique."},
+  {q:"Could you put it down?",opts:[{em:"🙅",l:"Couldn't",v:1480},{em:"📖",l:"Hard to",v:980},{em:"😌",l:"Now and then",v:680},{em:"😴",l:"Easily",v:380}],insight:"Strong un-put-down-ability — the readability the voice unlocks."},
+  {q:"Sum up the reading pace.",opts:[{em:"🏃",l:"Propulsive",v:1280},{em:"🐢",l:"Slow burn",v:780},{em:"😌",l:"Steady",v:1480},{em:"😮‍💨",l:"Demanding",v:620}],insight:"Steady-but-propulsive captures it — momentum carried by voice, weight by subject."},
+ ],
+ single:[
+  {q:"How would you rate the pacing?",opts:[{l:"Page-turner",v:1480},{l:"Steady",v:1280},{l:"Uneven",v:580},{l:"Slow",v:360}],insight:"Page-turner and steady together cover the strong majority."},
+  {q:"The book's length was…",opts:[{l:"Just right",v:1480},{l:"Could trim a bit",v:1080},{l:"Too long",v:580},{l:"Way too long",v:180}],insight:"'Just right' leads; the trim/too-long block is the measurable length debate."},
+  {q:"Where did it drag, if anywhere?",opts:[{l:"Never",v:1280},{l:"The middle",v:780},{l:"Foster-care stretch",v:980},{l:"The ending",v:280}],insight:"'Never' wins, but the foster-care stretch is the most-named drag point."},
+  {q:"What pulled you through?",opts:[{l:"Demon's voice",v:1820},{l:"Needing him okay",v:980},{l:"The characters",v:680},{l:"The social stakes",v:380}],insight:"Voice is the engine, with 'needing him to be okay' a strong emotional second."},
+  {q:"The relentless hardship was…",opts:[{l:"Necessary",v:1280},{l:"Powerful but heavy",v:1180},{l:"Sometimes too much",v:780},{l:"Exhausting",v:380}],insight:"Mostly necessary/powerful, with a real 'too much' minority — the bleakness debate."},
+  {q:"The strongest-paced section?",opts:[{l:"Early childhood",v:780},{l:"Football years",v:1280},{l:"Addiction spiral",v:1080},{l:"The recovery",v:480}],insight:"The football years win — the book's burst of momentum and hope."},
+  {q:"The episodic structure felt…",opts:[{l:"Propulsive",v:1180},{l:"Natural",v:1080},{l:"A bit repetitive",v:780},{l:"Meandering",v:280}],insight:"Mostly propulsive/natural; 'repetitive' is the structural critique in one option."},
+  {q:"How fast did you read it?",opts:[{l:"Devoured it",v:1080},{l:"Steady clip",v:1280},{l:"Slow & steady",v:780},{l:"Had to push",v:380}],insight:"A steady clip is the norm — fast for the voice, paced for the weight."},
+  {q:"Did the pacing match the subject?",opts:[{l:"Perfectly",v:1280},{l:"Mostly",v:1180},{l:"Not always",v:580},{l:"No",v:180}],insight:"Strong agreement that the slow-dread pacing fits the addiction story."},
+  {q:"One change to the pacing?",opts:[{l:"Tighten the middle",v:980},{l:"Nothing",v:1280},{l:"Slow the ending",v:480},{l:"Less hardship",v:780}],insight:"'Nothing' leads; tightening the middle and easing the hardship follow."},
+ ],
+},
+},
+tomorrow:{
+ characters:{
+  binary:[
+   {q:"Sam and Sadie's love is real even though it never turns romantic.",opts:[{l:"Agree",v:2540},{l:"Disagree",v:610}],insight:"The friendship-not-romance reading runs through ~35% of reviews — the single most-discussed idea, and most readers embrace it."},
+   {q:"Marx is too perfect to feel like a real person.",opts:[{l:"Agree",v:1520},{l:"Disagree",v:1640}],insight:"A real split — some reviews call him flawless and 'not a real person,' others find him the book's warm anchor."},
+   {q:"Sadie becomes hard to root for in the second half.",opts:[{l:"Agree",v:1680},{l:"Disagree",v:1480}],insight:"Reviews are divided — a vocal minority report resenting her withdrawal; others read it as honest grief."},
+   {q:"The book is very much about video games, not just using them as backdrop.",opts:[{l:"Agree",v:1880},{l:"Disagree",v:1290}],insight:"Reviewers repeatedly note it's 'VERY MUCH about video games' — for some a delight, for the detractor tail a barrier."},
+   {q:"Marx is the one who really holds the friendship together.",opts:[{l:"Agree",v:2160},{l:"Disagree",v:820}],insight:"Marx as the trio's 'stabilizer' is a widely shared reading; his loss is felt as the thing that breaks them."},
+   {q:"The abusive-mentor relationship is one of the book's darkest threads.",opts:[{l:"Agree",v:2010},{l:"Disagree",v:760}],insight:"Reviews flag emotional manipulation and assault in Sadie's relationship with her mentor Dov — a heavier thread than its page-count suggests."},
+   {q:"Sam's jealousy is his most human flaw.",opts:[{l:"Agree",v:1820},{l:"Disagree",v:1080}],insight:"Sam's insecurity drives much of the rift — reviewers find it frustrating but recognizable."},
+   {q:"Sam and Sadie are equally to blame for falling apart.",opts:[{l:"Agree",v:1560},{l:"Disagree",v:1540}],insight:"Almost evenly split — reviewers can't agree whether the rift is mutual or mostly one of them."},
+   {q:"The friendship matters more than any romance could.",opts:[{l:"Agree",v:2240},{l:"Disagree",v:760}],insight:"Most readers prize the non-romantic bond — 'true collaborators in this life are rare' is the line reviews quote most."},
+   {q:"You can't fully like either Sam or Sadie — and that's the point.",opts:[{l:"Agree",v:1880},{l:"Disagree",v:1120}],insight:"Mostly read as intentional; a real share of lower-rated reviews simply found them unlikable."},
+  ],
+  pairwise:[
+   {q:"Who was the better friend?",opts:[{l:"Sam",v:1520},{l:"Sadie",v:1400}],insight:"A near tie — reviewers swing both ways depending on which betrayal they weigh more."},
+   {q:"Who wronged the other more?",opts:[{l:"Sam",v:1460},{l:"Sadie",v:1600}],insight:"Slight edge to Sadie, often for shutting Sam out — but it's hotly contested."},
+   {q:"Whose grief hit you harder?",opts:[{l:"Sam's",v:1660},{l:"Sadie's",v:1440}],insight:"Sam's quieter grief edges Sadie's collapse for most reviewers."},
+   {q:"More to blame for the rift?",opts:[{l:"Sam's jealousy",v:1580},{l:"Sadie's coldness",v:1540}],insight:"Near dead heat — the book's central wound has two authors."},
+   {q:"Most beloved character?",opts:[{l:"Marx",v:2180},{l:"Sam",v:1020}],insight:"Marx wins clearly — the character reviews most often single out with affection."},
+   {q:"Better creative partner?",opts:[{l:"Sam",v:1480},{l:"Sadie",v:1560}],insight:"Sadie edges it as the purer 'artist'; Sam's instinct for what plays gets its champions."},
+   {q:"What bound them tighter?",opts:[{l:"The friendship",v:1640},{l:"The work",v:1500}],insight:"The friendship edges the work — but reviews note the two are inseparable, which is the point."},
+   {q:"Who needed the other more?",opts:[{l:"Sam",v:1740},{l:"Sadie",v:1280}],insight:"Most read Sam as the one more dependent on the partnership."},
+   {q:"Whose point of view would you most want?",opts:[{l:"Sam",v:1500},{l:"Sadie",v:1560}],insight:"Almost even — reviewers are curious about both interiorities."},
+   {q:"Who would you rather create with?",opts:[{l:"Sam",v:1420},{l:"Sadie",v:1580}],insight:"Sadie edges it as collaborator, despite — or because of — her exacting standards."},
+  ],
+  emoji:[
+   {q:"React to Marx.",opts:[{em:"❤️",l:"Adore him",v:1980},{em:"😭",l:"Grieve him",v:980},{em:"🥹",l:"Tender",v:640},{em:"🙏",l:"Grateful",v:520}],insight:"Affection dominates — Marx is the character reviews protect most."},
+   {q:"React to Sam.",opts:[{em:"🥺",l:"Sympathy",v:1280},{em:"😤",l:"Frustrated",v:1120},{em:"🙂",l:"Root for him",v:760},{em:"😐",l:"Mixed",v:540}],insight:"Sympathy shadowed by frustration — reviewers ache for him and want to shake him."},
+   {q:"React to Sadie.",opts:[{em:"👏",l:"Admire",v:1140},{em:"😤",l:"Frustrated",v:1280},{em:"🥺",l:"Sympathy",v:860},{em:"🙄",l:"Over her",v:620}],insight:"The most polarizing reactions of the trio — brilliance and exasperation in equal measure."},
+   {q:"React to the Sam & Sadie friendship.",opts:[{em:"🥹",l:"Moved",v:1620},{em:"❤️",l:"Love it",v:980},{em:"😮‍💨",l:"Frustrated",v:880},{em:"😤",l:"Exasperated",v:520}],insight:"Mostly moved, but the miscommunication exhausts a real share of readers."},
+   {q:"React to their creative partnership.",opts:[{em:"🤩",l:"Inspiring",v:1480},{em:"👏",l:"Brilliant",v:980},{em:"😌",l:"Loved it",v:680},{em:"😐",l:"Fine",v:480}],insight:"The collaboration is the most-discussed thread of all (~55% of reviews) — and the most admired."},
+   {q:"React to Sam's grandparents, Dong Hyun & Bong Cha.",opts:[{em:"🥰",l:"Warmth",v:1680},{em:"🙏",l:"Grateful",v:920},{em:"😌",l:"Comforted",v:640},{em:"❤️",l:"Love",v:560}],insight:"A pocket of unconditional warmth reviewers cherish."},
+   {q:"React to Marx's death.",opts:[{em:"💔",l:"Devastated",v:1880},{em:"😭",l:"Wept",v:880},{em:"😡",l:"Angry",v:680},{em:"😞",l:"Hollow",v:560}],insight:"Devastation for most; an angry minority found the gun-violence death manipulative."},
+   {q:"React to Sam's mother, Anna.",opts:[{em:"💔",l:"Heartbroken",v:1480},{em:"😢",l:"Sad",v:980},{em:"😌",l:"Tender",v:680},{em:"😐",l:"Mixed",v:480}],insight:"The car-accident loss colors all of Sam's choices — reviews feel its long shadow."},
+   {q:"React to the Sam/Sadie reunion.",opts:[{em:"🥹",l:"Hopeful",v:1620},{em:"😊",l:"Happy",v:880},{em:"😌",l:"Relieved",v:780},{em:"🤔",l:"Ambiguous",v:520}],insight:"Mostly hopeful, with a thoughtful minority reading it as deliberately open."},
+   {q:"React to Sadie's relationship with her mentor Dov.",opts:[{em:"😡",l:"Angry",v:1480},{em:"😞",l:"Sad",v:980},{em:"😬",l:"Uneasy",v:780},{em:"🤦",l:"Frustrated",v:620}],insight:"Anger and unease — reviews want Sadie free of him long before she is."},
+  ],
+  single:[
+   {q:"Which character do you relate to most?",opts:[{l:"Sam",v:1480},{l:"Sadie",v:1180},{l:"Marx",v:980},{l:"None of them",v:520}],insight:"Sam edges it — his insecurity is the most relatable, with Marx close behind on aspiration."},
+   {q:"Most beloved character?",opts:[{l:"Marx",v:2080},{l:"Sam",v:780},{l:"Sadie",v:620},{l:"The grandparents",v:520}],insight:"Marx, decisively — the character reviews most often name as their favorite."},
+   {q:"Who's most responsible for the rift?",opts:[{l:"Sam",v:1080},{l:"Sadie",v:1180},{l:"Dov",v:680},{l:"Just circumstance",v:920}],insight:"No clear culprit — the blame spreads, which is part of why the rift feels real."},
+   {q:"Marx's death was…",opts:[{l:"Devastating & meaningful",v:1620},{l:"Powerful",v:880},{l:"A bit manipulative",v:680},{l:"Gratuitous",v:520}],insight:"Most found it meaningful; a real minority echo the 'cheap / out of left field' critique."},
+   {q:"Which character would you want as a friend?",opts:[{l:"Marx",v:1980},{l:"Sam",v:620},{l:"Sadie",v:520},{l:"The grandparents",v:560}],insight:"Marx again — loyal, generous, steady. The friend everyone wants."},
+   {q:"Sam and Sadie's relationship is best called…",opts:[{l:"A creative partnership",v:1280},{l:"A deep friendship",v:1180},{l:"A love story",v:780},{l:"Toxic codependence",v:560}],insight:"'Creative partnership' and 'deep friendship' lead — reviews resist the simple 'romance' label."},
+   {q:"Who changed the most?",opts:[{l:"Sam",v:1380},{l:"Sadie",v:1080},{l:"Marx",v:480},{l:"None, really",v:680}],insight:"Sam's arc reads as the largest — from wounded boy to the one who reaches back out."},
+   {q:"Sadie is best described as…",opts:[{l:"Brilliant",v:1280},{l:"Wounded",v:980},{l:"Cold",v:780},{l:"Self-absorbed",v:580}],insight:"Brilliant first, but 'cold' and 'self-absorbed' capture the polarized minority."},
+   {q:"Sam is best described as…",opts:[{l:"Resilient",v:1280},{l:"Insecure",v:980},{l:"Loyal",v:780},{l:"Self-absorbed",v:580}],insight:"Resilience leads, with insecurity the trait reviewers most diagnose."},
+   {q:"Whose point of view would you most want next?",opts:[{l:"Marx",v:1380},{l:"Sadie",v:980},{l:"Sam",v:880},{l:"Dov",v:380}],insight:"Reviewers most want inside Marx — the character the book keeps at arm's length."},
+  ],
+ },
+ verdict:{
+  binary:[
+   {q:"You don't need to be a gamer to love this book.",opts:[{l:"Agree",v:1760},{l:"Disagree",v:1410}],insight:"Genuinely contested: many non-gamers were swept up, but the lower-rated reviews push back hard on the 'anyone will love it' promise."},
+   {q:"It's really about friendship, creativity, and grief — not video games.",opts:[{l:"Agree",v:1840},{l:"Disagree",v:1380}],insight:"The relationship and creativity themes dominate the reviews, yet many readers insist it's 'VERY MUCH about games.'"},
+   {q:"The game-making and collaboration is the best part.",opts:[{l:"Agree",v:2010},{l:"Disagree",v:1140}],insight:"Creativity and collaboration are the most-discussed thread in the set (~55%) — and the most praised."},
+   {q:"It earns its emotional gut-punches.",opts:[{l:"Agree",v:1820},{l:"Disagree",v:1340}],insight:"Most feel the payoffs are earned; the dissent overlaps with the 'manipulative' camp."},
+   {q:"It deserves the hype.",opts:[{l:"Agree",v:1840},{l:"Disagree",v:1320}],insight:"Mostly yes, but a real ~12% of reviews land on overrated or disappointed — more than for the other titles."},
+   {q:"It's overrated.",opts:[{l:"Agree",v:1240},{l:"Disagree",v:1900}],insight:"Most reject the label, but the 'overhyped / didn't live up to it' minority is sizable here."},
+   {q:"The dense prose and obscure vocabulary are a barrier.",opts:[{l:"Agree",v:1560},{l:"Disagree",v:1560}],insight:"Split right down the middle — about a quarter of reviews mention the dense prose, prized by some and a slog for others."},
+   {q:"The 'tomorrow' second-chances framing deepens the book.",opts:[{l:"Agree",v:1980},{l:"Disagree",v:980}],insight:"The do-over / respawn motif resonates as the book's organizing idea."},
+   {q:"It's more clever than emotionally honest.",opts:[{l:"Agree",v:1280},{l:"Disagree",v:1840}],insight:"Most reject this — the emotion reads as sincere, even when the structure is showy."},
+   {q:"I'd recommend it widely.",opts:[{l:"Agree",v:1880},{l:"Disagree",v:1240}],insight:"High recommend-rate, qualified by the gaming focus, dense prose, and grief content."},
+  ],
+  pairwise:[
+   {q:"What's it really about?",opts:[{l:"Love & loss",v:1880},{l:"Video games",v:1280}],insight:"Love and loss lead, but the 'it's really about games' camp is bigger than for any cozy read."},
+   {q:"What carried the book?",opts:[{l:"The friendship",v:1940},{l:"The tragedy",v:1180}],insight:"The Sam-Sadie-Marx bond carries it; the tragedy lands because of it."},
+   {q:"Which word fits better?",opts:[{l:"Heartbreaking",v:1820},{l:"Hopeful",v:1300}],insight:"Heartbreaking edges hopeful — but most feel it's genuinely both."},
+   {q:"How did the emotion read?",opts:[{l:"Earned",v:1880},{l:"Manipulative",v:1180}],insight:"Mostly earned, with a steady 'manipulative' minority around the second half."},
+   {q:"The hype was…",opts:[{l:"Deserved",v:1820},{l:"Overrated",v:1300}],insight:"Deserved wins, but the backlash here is realer than for the other titles."},
+   {q:"What pulled you in?",opts:[{l:"The game-making",v:1480},{l:"The relationships",v:1680}],insight:"Relationships edge it, but the creation scenes have devoted fans."},
+   {q:"Where does it land?",opts:[{l:"A masterpiece",v:1640},{l:"A very good book",v:1480}],insight:"Closer than for the other titles — its 3.95 average reflects a more divided room."},
+   {q:"The prose was…",opts:[{l:"Beautiful",v:1620},{l:"A barrier",v:1480}],insight:"Beauty edges barrier — the dense, vocabulary-rich style splits the room."},
+   {q:"Which half is stronger?",opts:[{l:"The first half",v:1700},{l:"The second half",v:1440}],insight:"The first half edges it — the rise; the second is where the pacing complaints cluster."},
+   {q:"What's the real draw?",opts:[{l:"The characters",v:1880},{l:"The ideas",v:1240}],insight:"Characters first — the ideas about art and time land through them."},
+  ],
+  emoji:[
+   {q:"Your overall reaction to the book?",opts:[{em:"😍",l:"Loved it",v:1820},{em:"🙂",l:"Liked it",v:1120},{em:"😐",l:"Mixed",v:640},{em:"😞",l:"Not for me",v:560}],insight:"Skews positive, but the 'mixed' and 'not for me' slices are bigger here — a 3.95 average and a real detractor tail."},
+   {q:"How emotional were you?",opts:[{em:"😭",l:"Wrecked",v:1480},{em:"😢",l:"Teary",v:920},{em:"😮‍💨",l:"Drained",v:680},{em:"😐",l:"Held up",v:620}],insight:"A tear-jerker for most — emotional reactions show up in ~17% of reviews."},
+   {q:"The gaming detail?",opts:[{em:"🤓",l:"Fascinating",v:1180},{em:"👏",l:"Immersive",v:920},{em:"😐",l:"Fine",v:720},{em:"🥱",l:"Too much",v:680}],insight:"Mostly engaging, but 'too much gaming' is the recurring complaint of the lower-rated reviews."},
+   {q:"The prose and vocabulary?",opts:[{em:"😍",l:"Beautiful",v:1180},{em:"😌",l:"Fine",v:980},{em:"😮‍💨",l:"Dense",v:880},{em:"🥱",l:"A slog",v:560}],insight:"Divided — the rich, obscure-word style (noted in ~25% of reviews) soars for some and slows others."},
+   {q:"Would you recommend it?",opts:[{em:"🙌",l:"Absolutely",v:1620},{em:"👍",l:"With caveats",v:1020},{em:"🤷",l:"Depends",v:680},{em:"👎",l:"No",v:380}],insight:"High recommend-rate; caveats cluster around the gaming focus and dense prose."},
+   {q:"The hype?",opts:[{em:"🏆",l:"Earned",v:1480},{em:"👍",l:"Deserved",v:980},{em:"🤔",l:"Sure",v:680},{em:"🙄",l:"Overrated",v:620}],insight:"Mostly earned; the overrated slice is bigger than for the other books."},
+   {q:"The 'second chances' theme?",opts:[{em:"🤯",l:"Brilliant",v:1480},{em:"👏",l:"Clever",v:980},{em:"🤔",l:"Subtle",v:680},{em:"😐",l:"Lost on me",v:420}],insight:"The do-over motif lands as the book's smartest idea for most readers."},
+   {q:"Does it stay with you?",opts:[{em:"🧠",l:"Can't stop",v:1480},{em:"💭",l:"Often",v:980},{em:"🙂",l:"Sometimes",v:640},{em:"😐",l:"Rarely",v:480}],insight:"High stickiness — reviewers keep turning it over."},
+   {q:"About video games or life?",opts:[{em:"🎮",l:"Games",v:680},{em:"❤️",l:"Life",v:1180},{em:"🤝",l:"Both",v:1620},{em:"🤔",l:"Unsure",v:420}],insight:"'Both' wins — the games and the living are inseparable, which is the point."},
+   {q:"Sum it up.",opts:[{em:"❤️‍🩹",l:"Tender & sad",v:1560},{em:"🎮",l:"Playful & deep",v:880},{em:"💔",l:"Heartbreaking",v:1080},{em:"✨",l:"Unforgettable",v:620}],insight:"'Tender and sad' captures the dominant read — playful surface, aching center."},
+  ],
+  single:[
+   {q:"Your overall rating?",opts:[{l:"Loved it (5★)",v:1850},{l:"Liked it (4★)",v:1120},{l:"It was okay (3★)",v:520},{l:"Not for me (1–2★)",v:600}],insight:"Mirrors the real set: ~43% five-star, but a notable ~14% one-or-two-star tail — its 3.95 average is the lowest of the three books."},
+   {q:"What's it really about?",opts:[{l:"Creativity & collaboration",v:1280},{l:"Friendship",v:1180},{l:"Grief & loss",v:880},{l:"Second chances",v:580}],insight:"Creativity narrowly leads — the making-things-together thread dominates ~55% of reviews."},
+   {q:"The single best thing?",opts:[{l:"The Sam-Sadie bond",v:1480},{l:"The game-making",v:880},{l:"The emotion",v:780},{l:"Marx",v:580}],insight:"The central partnership is the book's beating heart and top-cited strength."},
+   {q:"Do you need to be a gamer?",opts:[{l:"Not at all",v:1480},{l:"Helps a little",v:880},{l:"Somewhat",v:680},{l:"Yes",v:440}],insight:"'Not at all' still leads, but the 'somewhat / yes' share is larger than the book's fans tend to admit."},
+   {q:"The second half was…",opts:[{l:"Devastating & earned",v:1480},{l:"Powerful",v:880},{l:"A bit manipulative",v:780},{l:"Maudlin",v:420}],insight:"Mostly earned, with a clear 'manipulative/maudlin' minority — the book's main fault line."},
+   {q:"Recommend to…",opts:[{l:"Almost anyone",v:1080},{l:"Literary-fiction fans",v:1180},{l:"Okay with grief",v:880},{l:"Gamers",v:580}],insight:"Best matched to literary-fiction readers; broad appeal, lightly qualified by gaming and grief."},
+   {q:"Compared to the hype?",opts:[{l:"Exceeded it",v:1180},{l:"Met it",v:1080},{l:"Fell short",v:680},{l:"Didn't get it",v:520}],insight:"Mostly met-or-exceeded, but the 'fell short / didn't get it' share is real — ~12% of reviews."},
+   {q:"Best word for it?",opts:[{l:"Heartbreaking",v:1280},{l:"Tender",v:880},{l:"Clever",v:780},{l:"Overhyped",v:520}],insight:"Heartbreaking and tender lead — the emotional register readers remember."},
+   {q:"Would you re-read it?",opts:[{l:"Definitely",v:980},{l:"Maybe someday",v:1180},{l:"Probably not",v:780},{l:"Never",v:420}],insight:"'Maybe someday' leads — admired, but the density gives some readers pause about a second pass."},
+   {q:"Where does it rank for your year?",opts:[{l:"Best of the year",v:1180},{l:"Top 5",v:1080},{l:"Solid",v:680},{l:"Forgettable",v:380}],insight:"A standout for most, with a larger 'solid / forgettable' tail than the higher-rated titles."},
+  ],
+ },
+ ending:{
+  binary:[
+   {q:"The ending is hopeful, despite everything.",opts:[{l:"Agree",v:2210},{l:"Disagree",v:760}],insight:"The 'tomorrow' note lands as hopeful for most — a future, not a tidy resolution."},
+   {q:"Sam and Sadie reuniting to make games again is the right ending.",opts:[{l:"Agree",v:2080},{l:"Disagree",v:920}],insight:"Most feel the work is what could plausibly bring them back together."},
+   {q:"Reconnecting through a game was a perfect final note.",opts:[{l:"Agree",v:1960},{l:"Disagree",v:980}],insight:"The medium that bound them becoming the bridge back resonates widely."},
+   {q:"The ending earns its hope after so much loss.",opts:[{l:"Agree",v:1760},{l:"Disagree",v:1240}],insight:"Mostly earned, though the 'manipulative' camp carries into the close."},
+   {q:"I wanted more closure on Marx's child.",opts:[{l:"Agree",v:1840},{l:"Disagree",v:1180}],insight:"A real appetite for more — the child is a thread reviewers wish were fuller."},
+   {q:"Sadie coming back felt believable.",opts:[{l:"Agree",v:1580},{l:"Disagree",v:1520}],insight:"Split — some find her return moving, others a touch convenient."},
+   {q:"The 'tomorrow' do-over theme pays off in the final pages.",opts:[{l:"Agree",v:2010},{l:"Disagree",v:920}],insight:"The Macbeth motif closes the loop for most — endless second chances, like respawning."},
+   {q:"The ending is more bitter than sweet.",opts:[{l:"Agree",v:1340},{l:"Disagree",v:1760}],insight:"Most land on bittersweet-leaning-sweet — hope outweighs the ache, narrowly."},
+   {q:"It ends exactly where it should.",opts:[{l:"Agree",v:1720},{l:"Disagree",v:1320}],insight:"Majority satisfied with the stopping point; some wanted to see further."},
+   {q:"The final reconciliation forgives too easily.",opts:[{l:"Agree",v:1240},{l:"Disagree",v:1820}],insight:"Most disagree — the reconciliation reads as hard-won, not glib."},
+  ],
+  pairwise:[
+   {q:"Which describes the ending?",opts:[{l:"Hopeful",v:1820},{l:"Bittersweet",v:1620}],insight:"Hopeful edges it, but bittersweet is right behind — the close is both."},
+   {q:"The hopeful turn was…",opts:[{l:"Earned",v:1880},{l:"Unearned",v:1140}],insight:"Mostly earned, with the familiar 'manipulative' dissent."},
+   {q:"The better final beat?",opts:[{l:"Reuniting through a game",v:1720},{l:"Reuniting in person",v:1360}],insight:"The game reunion wins — fitting for two people who only ever fully met inside their work."},
+   {q:"Whose grief closed better?",opts:[{l:"Sam's",v:1620},{l:"Sadie's",v:1440}],insight:"Sam's arc resolves more cleanly; Sadie's stays more open."},
+   {q:"Your gut reaction to the close?",opts:[{l:"Satisfying",v:1980},{l:"Frustrating",v:1020}],insight:"Predominantly satisfying — frustration tracks with the 'wanted more closure' group."},
+   {q:"How did it leave Sam & Sadie?",opts:[{l:"Forgiven",v:1620},{l:"Unfinished",v:1480}],insight:"Leaning forgiven, but enough see lingering business to keep it honest."},
+   {q:"What brings them back?",opts:[{l:"The work",v:1840},{l:"The friendship",v:1280}],insight:"The work — for these two, making something together IS the friendship."},
+   {q:"How did you want it to end?",opts:[{l:"Open",v:1600},{l:"Fully resolved",v:1500}],insight:"A slight preference for the open ending it actually delivers."},
+   {q:"Which is stronger?",opts:[{l:"The ending",v:1520},{l:"The beginning",v:1560}],insight:"A near dead heat — the subway-platform opening is iconic, but the close hits hard."},
+   {q:"What defines the close?",opts:[{l:"Marx's legacy",v:1620},{l:"Marx's absence",v:1500}],insight:"Legacy edges absence — Marx shapes the ending even though he's gone."},
+  ],
+  emoji:[
+   {q:"React to the final chapter.",opts:[{em:"🥹",l:"Moved",v:1820},{em:"🌅",l:"Hopeful",v:980},{em:"😌",l:"At peace",v:680},{em:"😔",l:"Heavy",v:440}],insight:"Moved and hopeful — the close earns a genuine release."},
+   {q:"Sam & Sadie reuniting made you feel…",opts:[{em:"🥹",l:"Hopeful",v:1620},{em:"❤️",l:"Love it",v:920},{em:"😊",l:"Happy",v:680},{em:"🤔",l:"Unsure",v:520}],insight:"Mostly hopeful, with a thoughtful 'unsure' minority reading it as fragile."},
+   {q:"Reconnecting through a game?",opts:[{em:"🎮",l:"Perfect",v:1480},{em:"🥹",l:"Tender",v:980},{em:"👏",l:"Clever",v:780},{em:"😌",l:"Sweet",v:560}],insight:"The medium-as-bridge reads as the perfect, fitting choice."},
+   {q:"Marx's absence at the end?",opts:[{em:"💔",l:"Aches",v:1620},{em:"😢",l:"Grief",v:980},{em:"😌",l:"Honored",v:780},{em:"😞",l:"Hollow",v:520}],insight:"His absence is the ending's quiet, persistent ache."},
+   {q:"The 'tomorrow' theme?",opts:[{em:"🤯",l:"Brilliant",v:1480},{em:"👏",l:"Clever",v:980},{em:"🥹",l:"Moving",v:780},{em:"😐",l:"Fine",v:380}],insight:"The do-over idea lands as both clever and moving in the final pages."},
+   {q:"How satisfied with the close?",opts:[{em:"😌",l:"Very",v:1620},{em:"🙂",l:"Mostly",v:980},{em:"😐",l:"Mixed",v:560},{em:"😕",l:"Let down",v:380}],insight:"Satisfaction is high; the small 'let down' slice wanted more resolution."},
+   {q:"Did it earn the hope?",opts:[{em:"🙌",l:"Fully",v:1480},{em:"👍",l:"Mostly",v:980},{em:"🤔",l:"Not quite",v:680},{em:"😕",l:"No",v:380}],insight:"Mostly yes — the dissent is the 'manipulative' reading carried to the end."},
+   {q:"Turning the last page, you felt…",opts:[{em:"😌",l:"Settled",v:1480},{em:"🥹",l:"Full heart",v:1080},{em:"💭",l:"Thoughtful",v:680},{em:"😢",l:"Tearful",v:580}],insight:"A settled, full-hearted close — the lingering kind."},
+   {q:"The pacing of the ending?",opts:[{em:"😌",l:"Just right",v:1480},{em:"👍",l:"Good",v:980},{em:"😮‍💨",l:"Rushed",v:620},{em:"🥱",l:"Dragged",v:380}],insight:"Mostly well-judged, with a 'rushed' minority on the reconciliation."},
+   {q:"Sum up the close.",opts:[{em:"🌅",l:"Hope",v:1480},{em:"❤️‍🩹",l:"Healing",v:980},{em:"💔",l:"Bittersweet",v:880},{em:"🎮",l:"A new game",v:620}],insight:"Hope and healing carry it — a future opening, not a wound closing."},
+  ],
+  single:[
+   {q:"How did the ending feel?",opts:[{l:"Hopeful",v:1620},{l:"Bittersweet",v:1080},{l:"Earned",v:780},{l:"Too neat",v:440}],insight:"Hopeful and bittersweet dominate — a forward-looking, hard-won close."},
+   {q:"Sam & Sadie reuniting was…",opts:[{l:"Perfect",v:1280},{l:"Welcome",v:1080},{l:"A bit convenient",v:680},{l:"Unconvincing",v:360}],insight:"Mostly welcomed, with a minority finding Sadie's return a touch easy."},
+   {q:"The most powerful ending beat?",opts:[{l:"Reconnecting via the game",v:1280},{l:"Marx's legacy",v:980},{l:"Sadie's return",v:780},{l:"Sam's growth",v:580}],insight:"The game reunion edges it — the book's central metaphor paying off."},
+   {q:"Did the ending earn its hope?",opts:[{l:"Fully",v:1280},{l:"Mostly",v:1180},{l:"Not quite",v:680},{l:"No",v:340}],insight:"Strongly yes; the dissent overlaps with the 'second half' critics."},
+   {q:"What did you want more of?",opts:[{l:"Marx's child",v:1180},{l:"Sadie's recovery",v:980},{l:"Nothing, it was right",v:1080},{l:"Less, it dragged",v:300}],insight:"Marx's child tops the wishlist — a thread reviewers wanted followed further."},
+   {q:"Best word for the ending?",opts:[{l:"Hopeful",v:1280},{l:"Bittersweet",v:1080},{l:"Redemptive",v:780},{l:"Quiet",v:480}],insight:"Hope leads, but 'quiet' captures its restraint — no fireworks, just a door reopening."},
+   {q:"The 'tomorrow / do-over' theme…",opts:[{l:"Landed beautifully",v:1480},{l:"Mostly landed",v:980},{l:"Was subtle",v:680},{l:"Was lost on me",v:300}],insight:"The Macbeth motif pays off as the book's organizing idea for most readers."},
+   {q:"Reconnecting through a game was…",opts:[{l:"Perfect",v:1280},{l:"Lovely",v:1080},{l:"A bit on-the-nose",v:600},{l:"Lost on me",v:260}],insight:"Mostly beloved; the 'on-the-nose' note is the only real dissent."},
+   {q:"Did the ending change your view?",opts:[{l:"Raised it",v:1280},{l:"No change",v:1180},{l:"Lowered a little",v:480},{l:"Lowered a lot",v:220}],insight:"The ending lifts the book for the largest group."},
+   {q:"How long did it stay with you?",opts:[{l:"Still thinking",v:1280},{l:"A few days",v:1080},{l:"Briefly",v:480},{l:"Not really",v:220}],insight:"High persistence — the final image lingers."},
+  ],
+ },
+ pacing:{
+  binary:[
+   {q:"The dense prose and obscure vocabulary slow the reading down.",opts:[{l:"Agree",v:1640},{l:"Disagree",v:1520}],insight:"About a quarter of reviews mention the dense, vocabulary-rich style — savored by some, a drag for others."},
+   {q:"The Marx coma chapter is a stylistic high point.",opts:[{l:"Agree",v:2080},{l:"Disagree",v:920}],insight:"The unusual second-person coma section is repeatedly singled out as a showcase of Zevin's writing."},
+   {q:"The second half loses momentum.",opts:[{l:"Agree",v:1620},{l:"Disagree",v:1520}],insight:"Split — the 'dragged / lost interest in the back half' complaint appears in ~10% of reviews."},
+   {q:"The jumps across years and cities work well.",opts:[{l:"Agree",v:1840},{l:"Disagree",v:1180}],insight:"The Boston–LA–Tokyo time-hopping mostly reads as deftly handled."},
+   {q:"The gaming references and detail are easy to skim.",opts:[{l:"Agree",v:1480},{l:"Disagree",v:1620}],insight:"Split — some glide past the gaming-culture detail, others savor or stall on it."},
+   {q:"The experimental chapters are worth the disruption.",opts:[{l:"Agree",v:1940},{l:"Disagree",v:1020}],insight:"The risky techniques — second-person, dropping you into a game — pay off for most readers."},
+   {q:"It's a propulsive read despite its length.",opts:[{l:"Agree",v:1740},{l:"Disagree",v:1320}],insight:"Mixed — many race through it; others, like the lower-rated reviews, found 400+ pages feel much longer."},
+   {q:"The middle sags between the big emotional beats.",opts:[{l:"Agree",v:1480},{l:"Disagree",v:1620}],insight:"Most deny a sag; where felt, it's in the studio-building stretches."},
+   {q:"The shifts in narrative style enrich the book.",opts:[{l:"Agree",v:1960},{l:"Disagree",v:1020}],insight:"The stylistic variety is mostly read as a strength, not a gimmick."},
+   {q:"It's denser and slower than its reputation suggests.",opts:[{l:"Agree",v:1640},{l:"Disagree",v:1480}],insight:"Several reviews warn that this 'steak, not a hamburger' takes a week, not a day, despite the buzz."},
+  ],
+  pairwise:[
+   {q:"Which was your experience?",opts:[{l:"Gripping",v:1740},{l:"Heavy going",v:1380}],insight:"Gripping leads, but 'heavy going' is a bigger share here — the prose and gaming detail are real friction."},
+   {q:"Which moved faster?",opts:[{l:"The relationships",v:1740},{l:"The game-making",v:1340}],insight:"The relationship drama propels faster; the craft scenes are slower and denser."},
+   {q:"Which half is better paced?",opts:[{l:"The first half",v:1680},{l:"The second half",v:1440}],insight:"The first half edges it — the rise reads faster than the grief."},
+   {q:"The experimental chapters were…",opts:[{l:"Enriching",v:1820},{l:"Disruptive",v:1180}],insight:"Mostly enriching; the disruption is the price a minority resents."},
+   {q:"How did it read?",opts:[{l:"Propulsive",v:1560},{l:"Slow burn",v:1540}],insight:"Almost even — momentum for some, a deliberate slow burn for others."},
+   {q:"The prose was…",opts:[{l:"Worth savoring",v:1700},{l:"Too dense",v:1440}],insight:"Worth savoring edges too dense — the vocabulary-rich style is the book's pacing pressure point."},
+   {q:"The Marx coma chapter was…",opts:[{l:"Powerful",v:2040},{l:"A tonal detour",v:1000}],insight:"Overwhelmingly powerful — even readers who note the tonal shift admire it."},
+   {q:"How did you go through it?",opts:[{l:"Read it fast",v:1520},{l:"Paced myself",v:1600}],insight:"A slight lean to pacing yourself — several reviewers report rereading paragraphs."},
+   {q:"The time jumps were…",opts:[{l:"Smooth",v:1760},{l:"Jarring",v:1200}],insight:"Mostly smooth; a minority found the leaps abrupt."},
+   {q:"What pulled you forward?",opts:[{l:"The plot",v:1480},{l:"The ideas",v:1540}],insight:"Near even — the ideas about art and time pull as hard as the events."},
+  ],
+  emoji:[
+   {q:"React to the book's pacing.",opts:[{em:"🏃",l:"Fast",v:1080},{em:"😌",l:"Steady",v:1380},{em:"🐢",l:"Slow",v:780},{em:"😮‍💨",l:"Uneven",v:520}],insight:"Steady-to-slow dominate — a deliberate read more than a page-turner for many."},
+   {q:"The gaming detail?",opts:[{em:"🤓",l:"Loved it",v:1180},{em:"👀",l:"Engaged",v:1020},{em:"😐",l:"Fine",v:680},{em:"🥱",l:"Too much",v:680}],insight:"Mostly engaged; the 'too much' slice is the lower-rated reviews' core complaint."},
+   {q:"The second half?",opts:[{em:"🥹",l:"Gripping",v:1180},{em:"😐",l:"Steady",v:980},{em:"😮‍💨",l:"Sagged",v:880},{em:"🥱",l:"Lost me",v:520}],insight:"Gripping for most, but the 'sagged / lost me' tail is the back-half critique."},
+   {q:"The experimental chapters?",opts:[{em:"🤯",l:"Loved",v:1280},{em:"👏",l:"Clever",v:1080},{em:"🤔",l:"Mixed",v:680},{em:"😕",l:"Jarring",v:420}],insight:"Mostly loved; the structural risks divide a minority."},
+   {q:"The Marx coma chapter?",opts:[{em:"😭",l:"Devastating",v:1480},{em:"👏",l:"Brilliant",v:980},{em:"🤔",l:"Odd",v:580},{em:"😮‍💨",l:"Heavy",v:480}],insight:"Devastating and brilliant — the book's stylistic peak."},
+   {q:"The prose and vocabulary?",opts:[{em:"😍",l:"Beautiful",v:1080},{em:"😌",l:"Fine",v:1080},{em:"😮‍💨",l:"Dense",v:880},{em:"🥱",l:"A slog",v:520}],insight:"Divided — the obscure-word style is a feature for some, a wall for others."},
+   {q:"Could you put it down?",opts:[{em:"🙅",l:"Couldn't",v:1280},{em:"📖",l:"Hard to",v:980},{em:"😌",l:"Now and then",v:720},{em:"😴",l:"Easily",v:520}],insight:"Strong un-put-down-ability for most; a minority kept finding excuses to step away."},
+   {q:"Getting into it?",opts:[{em:"🚪",l:"Instant",v:1180},{em:"🙂",l:"Quick",v:1020},{em:"😮‍💨",l:"Took a while",v:720},{em:"😣",l:"Struggled",v:480}],insight:"The subway-platform opening hooks most readers fast."},
+   {q:"Keeping going at points?",opts:[{em:"😮‍💨",l:"Needed breaks",v:980},{em:"🙂",l:"Fine",v:1180},{em:"😌",l:"Easy",v:720},{em:"😣",l:"Tough",v:520}],insight:"Mostly smooth going; breaks were emotional — or, for some, the prose."},
+   {q:"Sum up the pace.",opts:[{em:"🏃",l:"Propulsive",v:1080},{em:"🐢",l:"Slow burn",v:880},{em:"😌",l:"Steady",v:1380},{em:"😮‍💨",l:"Demanding",v:620}],insight:"Steady-but-demanding — momentum carried by character, weight by craft and prose."},
+  ],
+  single:[
+   {q:"How would you rate the pacing?",opts:[{l:"Page-turner",v:1280},{l:"Steady",v:1280},{l:"Uneven",v:680},{l:"Slow",v:520}],insight:"Page-turner and steady tie for the lead; the 'slow' tail is larger than for the other titles."},
+   {q:"The gaming detail was…",opts:[{l:"Just right",v:1180},{l:"Fascinating",v:980},{l:"A bit much",v:780},{l:"Too much",v:560}],insight:"Mostly welcomed; 'a bit much / too much' together are the measurable pacing complaint."},
+   {q:"Where did it drag, if anywhere?",opts:[{l:"Never",v:1080},{l:"The second half",v:980},{l:"The gaming passages",v:880},{l:"The middle",v:480}],insight:"'Never' leads narrowly — but the second half and gaming passages are the named drag points."},
+   {q:"What pulled you through?",opts:[{l:"The characters",v:1480},{l:"The emotion",v:980},{l:"The game-making",v:680},{l:"Needing them okay",v:580}],insight:"The characters are the engine; needing them to be okay is the emotional second."},
+   {q:"The experimental chapters were…",opts:[{l:"Brilliant",v:1280},{l:"Clever",v:1080},{l:"Mixed",v:680},{l:"Disruptive",v:360}],insight:"Mostly brilliant/clever; 'disruptive' captures the dissent."},
+   {q:"The Marx coma chapter was…",opts:[{l:"A high point",v:1480},{l:"Powerful",v:1080},{l:"A tonal shift",v:580},{l:"Too much",v:280}],insight:"A high point for most — the book's most discussed formal choice."},
+   {q:"The prose was…",opts:[{l:"Beautiful",v:1080},{l:"Manageable",v:1080},{l:"Dense",v:880},{l:"A barrier",v:540}],insight:"Beauty and 'manageable' lead, but 'dense / a barrier' together are the real pacing friction (~25% of reviews)."},
+   {q:"How fast did you read it?",opts:[{l:"Devoured it",v:1080},{l:"Steady clip",v:1180},{l:"Slow & steady",v:780},{l:"Had to push",v:520}],insight:"A steady clip leads — and several reviewers warn it takes a week, not a day."},
+   {q:"Did the pacing match the story?",opts:[{l:"Perfectly",v:1180},{l:"Mostly",v:1180},{l:"Not always",v:680},{l:"No",v:320}],insight:"Mostly yes — the rhythm fits the rise-and-grief shape for most readers."},
+   {q:"One change to the pacing?",opts:[{l:"Trim the gaming detail",v:980},{l:"Nothing",v:1180},{l:"Tighten the second half",v:880},{l:"Lighten the prose",v:680}],insight:"'Nothing' leads; trimming the gaming detail and tightening the second half follow."},
+  ],
+ },
+},
+wuthering:{
+ characters:{
+  binary:[
+   {q:"Heathcliff is a villain, not a romantic hero.",opts:[{l:"Agree",v:1980},{l:"Disagree",v:1290}],insight:"The villain-vs-Byronic-hero debate runs through about a quarter of reviews; most modern readers land on 'villain.'"},
+   {q:"Catherine Earnshaw is impossible to fully sympathize with.",opts:[{l:"Agree",v:1820},{l:"Disagree",v:1410}],insight:"Catherine divides readers as sharply as Heathcliff — selfish and maddening to some, tragic to others."},
+   {q:"Nelly Dean is more meddler than innocent bystander.",opts:[{l:"Agree",v:1640},{l:"Disagree",v:1480}],insight:"A favorite reader theory: the narrator quietly shapes events she claims only to witness."},
+   {q:"Hareton and young Cathy redeem the next generation.",opts:[{l:"Agree",v:2210},{l:"Disagree",v:760}],insight:"The second generation's tenderness is widely read as the book's one note of hope."},
+   {q:"Edgar Linton is the only truly decent person in the book.",opts:[{l:"Agree",v:1580},{l:"Disagree",v:1540}],insight:"Split — some champion Edgar's gentleness, others find him weak and dull."},
+   {q:"Heathcliff's cruelty is impossible to excuse.",opts:[{l:"Agree",v:2080},{l:"Disagree",v:1080}],insight:"Most refuse to romanticize his abuse, however wronged he was as a boy."},
+   {q:"Catherine and Heathcliff deserve each other.",opts:[{l:"Agree",v:2010},{l:"Disagree",v:1010}],insight:"A common verdict — two destructive forces fitted only to ruin each other and everyone near them."},
+   {q:"Isabella was a fool to marry Heathcliff.",opts:[{l:"Agree",v:1780},{l:"Disagree",v:1280}],insight:"Readers pity Isabella but mostly judge the infatuation a self-inflicted wound."},
+   {q:"Hindley's downfall is largely his own doing.",opts:[{l:"Agree",v:1620},{l:"Disagree",v:1410}],insight:"Split between blaming his cruelty and pitying a grief that Heathcliff exploits."},
+   {q:"Lockwood is a narrator the book could lose.",opts:[{l:"Agree",v:1480},{l:"Disagree",v:1560}],insight:"The outer frame divides readers — clumsy intruder to some, essential device to others."},
+  ],
+  pairwise:[
+   {q:"Who is more monstrous?",opts:[{l:"Heathcliff",v:2110},{l:"Hindley",v:980}],insight:"Heathcliff leads — his cruelty is colder and more sustained than Hindley's drunken rage."},
+   {q:"Bigger fool for love?",opts:[{l:"Catherine",v:1640},{l:"Isabella",v:1480}],insight:"Catherine edges it — her choice of Edgar while loving Heathcliff sets the whole tragedy."},
+   {q:"Whose love was real?",opts:[{l:"Heathcliff",v:1880},{l:"Edgar",v:1240}],insight:"Heathcliff's obsessive devotion reads as 'real' to more readers — though many call it possession, not love."},
+   {q:"More sympathetic?",opts:[{l:"Young Cathy",v:1820},{l:"Catherine",v:1280}],insight:"The daughter wins sympathy her mother rarely does — kinder, and trapped by others' sins."},
+   {q:"Better narrator?",opts:[{l:"Nelly",v:1980},{l:"Lockwood",v:1080}],insight:"Nelly's intimacy with the family wins out over Lockwood's bafflement."},
+   {q:"Crueler to the children?",opts:[{l:"Heathcliff",v:2010},{l:"Hindley",v:1080}],insight:"Heathcliff's calculated cruelty to Hareton and Linton outweighs Hindley's neglect."},
+   {q:"Truer redemption?",opts:[{l:"Hareton",v:1720},{l:"Young Cathy",v:1380}],insight:"Hareton's gentleness despite his upbringing moves readers most."},
+   {q:"Who ruined more lives?",opts:[{l:"Heathcliff",v:2240},{l:"Catherine",v:880}],insight:"Heathcliff, decisively — his revenge reaches into a second generation."},
+   {q:"Most wronged?",opts:[{l:"Isabella",v:1280},{l:"Hareton",v:1740}],insight:"Hareton edges it — robbed of name, education, and inheritance by Heathcliff's design."},
+   {q:"Whom would you trust to tell it straight?",opts:[{l:"Nelly",v:1640},{l:"Lockwood",v:1380}],insight:"Neither fully — but Nelly's closeness wins a wary majority despite her bias."},
+  ],
+  emoji:[
+   {q:"React to Heathcliff.",opts:[{em:"😍",l:"Magnetic",v:680},{em:"😬",l:"Disturbed",v:1280},{em:"😡",l:"Furious",v:980},{em:"💔",l:"Pity him",v:780}],insight:"Disturbance leads — fascination and revulsion in the same breath, which is the Heathcliff effect."},
+   {q:"React to Catherine.",opts:[{em:"😤",l:"Exasperated",v:1280},{em:"💔",l:"Moved",v:880},{em:"🙄",l:"Over her",v:780},{em:"😐",l:"Mixed",v:680}],insight:"Exasperation dominates — few characters test reader patience like Catherine."},
+   {q:"React to Nelly.",opts:[{em:"🤔",l:"Suspicious",v:1180},{em:"😐",l:"Neutral",v:980},{em:"🙏",l:"Grateful",v:680},{em:"😒",l:"Meddler",v:880}],insight:"Suspicion and 'meddler' together — readers don't fully trust their guide."},
+   {q:"React to Edgar.",opts:[{em:"🥺",l:"Sorry for him",v:1180},{em:"👍",l:"Decent",v:980},{em:"😴",l:"Dull",v:880},{em:"😐",l:"Fine",v:680}],insight:"Sympathy mixed with boredom — the decent man the story has little use for."},
+   {q:"React to young Cathy.",opts:[{em:"🙂",l:"Fond",v:1180},{em:"👏",l:"Root for her",v:980},{em:"🥹",l:"Hopeful",v:780},{em:"😐",l:"Mixed",v:620}],insight:"Warmer reactions than her mother gets — readers want her to escape the cycle."},
+   {q:"React to Hareton.",opts:[{em:"❤️",l:"Love him",v:1480},{em:"🥹",l:"Tender",v:980},{em:"👏",l:"Redeemed",v:780},{em:"😌",l:"Soft spot",v:560}],insight:"The book's most beloved figure by the end — gentleness that survives cruelty."},
+   {q:"React to Hindley.",opts:[{em:"😡",l:"Hate him",v:1180},{em:"🥺",l:"Pity him",v:980},{em:"😐",l:"Mixed",v:780},{em:"😤",l:"Contempt",v:620}],insight:"Anger softened by pity — a cruel man undone by his own grief."},
+   {q:"React to Isabella.",opts:[{em:"🥺",l:"Pity",v:1280},{em:"🤦",l:"Facepalm",v:980},{em:"😐",l:"Mixed",v:680},{em:"👏",l:"Brave escape",v:680}],insight:"Pity with exasperation — but her escape earns a measure of respect."},
+   {q:"React to Joseph.",opts:[{em:"😤",l:"Annoying",v:1080},{em:"😆",l:"Funny",v:980},{em:"🙄",l:"Over him",v:780},{em:"😐",l:"Fine",v:680}],insight:"The dialect-spouting servant is comic relief to some, an obstacle to others."},
+   {q:"React to Lockwood.",opts:[{em:"😆",l:"Clueless",v:1080},{em:"🙂",l:"Fine",v:980},{em:"😐",l:"Meh",v:880},{em:"🤔",l:"Useful frame",v:680}],insight:"Mostly read as the clueless outsider whose confusion mirrors the reader's own."},
+  ],
+  single:[
+   {q:"Most compelling character?",opts:[{l:"Heathcliff",v:1880},{l:"Catherine",v:880},{l:"Nelly",v:520},{l:"Hareton",v:680}],insight:"Heathcliff dominates the conversation — appearing in over half of all reviews."},
+   {q:"Who's most to blame for the tragedy?",opts:[{l:"Heathcliff",v:1280},{l:"Catherine",v:1080},{l:"Hindley",v:680},{l:"Nelly",v:580}],insight:"Heathcliff and Catherine share the blame — the tragedy needs both of them."},
+   {q:"Who would you least want to know?",opts:[{l:"Heathcliff",v:1480},{l:"Hindley",v:880},{l:"Joseph",v:680},{l:"Catherine",v:680}],insight:"Heathcliff, easily — the reader's instinct to keep a safe distance."},
+   {q:"Most sympathetic character?",opts:[{l:"Hareton",v:1280},{l:"Young Cathy",v:1080},{l:"Edgar",v:680},{l:"Isabella",v:580}],insight:"Hareton wins the sympathy his elders forfeit — kindness against the odds."},
+   {q:"Best narrator choice?",opts:[{l:"Nelly",v:1180},{l:"Lockwood",v:680},{l:"Wish it were Heathcliff",v:880},{l:"Wish it were Catherine",v:780}],insight:"Nelly edges it, but many readers crave the story from inside the central pair."},
+   {q:"Whose ending satisfied you most?",opts:[{l:"Hareton & Cathy",v:1480},{l:"Heathcliff",v:880},{l:"Catherine",v:580},{l:"No one's",v:680}],insight:"The young couple's union is the close most readers find satisfying."},
+   {q:"Heathcliff is best described as…",opts:[{l:"An abuser",v:1280},{l:"A tragic victim",v:880},{l:"A Byronic anti-hero",v:780},{l:"A monster",v:680}],insight:"'Abuser' leads modern readings — the romantic gloss has largely faded."},
+   {q:"Catherine is best described as…",opts:[{l:"Selfish",v:1180},{l:"Passionate",v:980},{l:"Trapped",v:780},{l:"Insufferable",v:680}],insight:"Selfish and passionate top the list — the same trait read two ways."},
+   {q:"Whose point of view would you most want?",opts:[{l:"Heathcliff",v:1480},{l:"Catherine",v:980},{l:"Isabella",v:580},{l:"Nelly",v:580}],insight:"Readers most want inside Heathcliff — the mind the frame narration keeps closed."},
+   {q:"The real love story is…",opts:[{l:"Heathcliff & Catherine",v:1080},{l:"Hareton & Cathy",v:1180},{l:"There is none",v:780},{l:"The moors themselves",v:580}],insight:"Many readers now hand the title of 'real' love story to the gentler second generation."},
+  ],
+ },
+ verdict:{
+  binary:[
+   {q:"Wuthering Heights is a deserved classic.",opts:[{l:"Agree",v:2280},{l:"Disagree",v:880}],insight:"The classic-vs-overrated debate appears in nearly 30% of reviews; most defend its status."},
+   {q:"It's a great novel, but not a love story.",opts:[{l:"Agree",v:2010},{l:"Disagree",v:1110}],insight:"The 'this isn't romance, it's a study of obsession and cruelty' reading is now the dominant one."},
+   {q:"The atmosphere is the best thing about it.",opts:[{l:"Agree",v:1980},{l:"Disagree",v:1180}],insight:"The Gothic mood of the moors is singled out in over a third of reviews — its most-praised quality."},
+   {q:"You can admire it without enjoying it.",opts:[{l:"Agree",v:2210},{l:"Disagree",v:760}],insight:"A very common reader stance — respect for the craft alongside discomfort with the characters."},
+   {q:"It's overrated.",opts:[{l:"Agree",v:980},{l:"Disagree",v:2090}],insight:"Most reject the 'overrated' label, even when they don't love it."},
+   {q:"The unlikable characters are the point, not a flaw.",opts:[{l:"Agree",v:2080},{l:"Disagree",v:1010}],insight:"Around a quarter of reviews wrestle with likability; most decide the cruelty is intentional."},
+   {q:"It holds up better than most Victorian novels.",opts:[{l:"Agree",v:1640},{l:"Disagree",v:1420}],insight:"Split — its rawness feels modern to some, its prose dated to others."},
+   {q:"I'd recommend it to a modern reader.",opts:[{l:"Agree",v:1580},{l:"Disagree",v:1480}],insight:"A close call — readers attach warnings about the prose and the bleakness."},
+   {q:"It's more horror than romance.",opts:[{l:"Agree",v:1880},{l:"Disagree",v:1180}],insight:"The Gothic-horror reading is gaining ground over the old romance framing."},
+   {q:"Brontë's only novel is a one-off masterpiece.",opts:[{l:"Agree",v:2010},{l:"Disagree",v:980}],insight:"The fact that Emily Brontë wrote just this one book amplifies its mystique for many."},
+  ],
+  pairwise:[
+   {q:"What is it really?",opts:[{l:"A revenge story",v:1640},{l:"A love story",v:1480}],insight:"Revenge edges love — the cruelty and retribution loom larger than the romance for modern readers."},
+   {q:"Which genre fits?",opts:[{l:"Gothic horror",v:1740},{l:"Romance",v:1340}],insight:"Gothic horror is overtaking romance as the label readers reach for."},
+   {q:"Your verdict on its status?",opts:[{l:"Deserved classic",v:2080},{l:"Overrated",v:980}],insight:"Deserved-classic wins clearly, matching the high average rating."},
+   {q:"Your relationship to it?",opts:[{l:"Admire it",v:1740},{l:"Enjoy it",v:1380}],insight:"More readers admire than enjoy — the book commands respect more than affection."},
+   {q:"What carries it?",opts:[{l:"The atmosphere",v:1680},{l:"The characters",v:1440}],insight:"The moody, moorland atmosphere edges the characters as the book's engine."},
+   {q:"Which story is better?",opts:[{l:"Gen 1 (Cathy & Heathcliff)",v:1880},{l:"Gen 2 (Hareton & Cathy)",v:1240}],insight:"The first generation's storm wins for sheer intensity, even as gen 2 brings the hope."},
+   {q:"Does it feel…?",opts:[{l:"Timeless",v:1640},{l:"Dated",v:1420}],insight:"Leaning timeless — the emotional violence feels strikingly modern."},
+   {q:"What do you read it for?",opts:[{l:"The prose",v:1380},{l:"The plot",v:1640}],insight:"The plot's intensity edges the prose as the draw, despite the language's reputation."},
+   {q:"Where does it land?",opts:[{l:"A masterpiece",v:1880},{l:"A very good book",v:1240}],insight:"Skews to masterpiece — the one-novel mystique helps."},
+   {q:"Brontë sisters head-to-head?",opts:[{l:"Wuthering Heights",v:1540},{l:"Jane Eyre",v:1580}],insight:"Essentially tied — the enduring Brontë debate splits readers down the middle."},
+  ],
+  emoji:[
+   {q:"Your overall reaction to the book?",opts:[{em:"😍",l:"Loved it",v:1680},{em:"🙂",l:"Liked it",v:980},{em:"😐",l:"Mixed",v:680},{em:"😤",l:"Frustrated",v:520}],insight:"Skews positive, but 'frustrated' is a bigger slice here than for most classics."},
+   {q:"The atmosphere?",opts:[{em:"🌫️",l:"Haunting",v:1480},{em:"👏",l:"Vivid",v:980},{em:"😌",l:"Immersive",v:780},{em:"😐",l:"Fine",v:420}],insight:"Haunting and vivid dominate — the moors are the book's triumph."},
+   {q:"The toxic relationships?",opts:[{em:"😬",l:"Disturbing",v:1280},{em:"🤔",l:"Fascinating",v:980},{em:"😡",l:"Infuriating",v:780},{em:"💔",l:"Tragic",v:680}],insight:"Disturbing and fascinating in equal measure — readers can't look away."},
+   {q:"Is it a classic?",opts:[{em:"👑",l:"Deserved",v:1480},{em:"👍",l:"Sure",v:980},{em:"🤔",l:"Unsure",v:680},{em:"🙄",l:"Overrated",v:420}],insight:"Strong 'deserved' majority; the overrated tail is small."},
+   {q:"Would you recommend it?",opts:[{em:"🙌",l:"Yes",v:1280},{em:"👍",l:"With warnings",v:1080},{em:"🤷",l:"Depends",v:680},{em:"👎",l:"No",v:420}],insight:"Mostly yes, but 'with warnings' is unusually large — the bleakness needs flagging."},
+   {q:"The darkness?",opts:[{em:"🖤",l:"Loved it",v:1180},{em:"😬",l:"Heavy",v:980},{em:"😨",l:"Unsettling",v:780},{em:"😐",l:"Fine",v:680}],insight:"Many readers savor the darkness; others find it relentless."},
+   {q:"Reading the prose?",opts:[{em:"😍",l:"Beautiful",v:1080},{em:"😌",l:"Fine",v:1180},{em:"😮‍💨",l:"Dense",v:880},{em:"🥱",l:"A slog",v:480}],insight:"Divided — the language soars for some and slows others."},
+   {q:"How much did it stay with you?",opts:[{em:"🧠",l:"Haunted me",v:1480},{em:"💭",l:"Often",v:980},{em:"🙂",l:"Sometimes",v:680},{em:"😐",l:"Rarely",v:420}],insight:"High stickiness — 'haunted me' is the fitting verb for this one."},
+   {q:"The two-generation structure?",opts:[{em:"👏",l:"Clever",v:1080},{em:"🤔",l:"Confusing",v:980},{em:"😴",l:"Dragged",v:780},{em:"🙂",l:"Fine",v:680}],insight:"Clever to some, confusing or draggy to others — the structure divides."},
+   {q:"Sum it up.",opts:[{em:"🌪️",l:"Stormy",v:1280},{em:"🖤",l:"Bleak",v:980},{em:"💔",l:"Tragic",v:880},{em:"✨",l:"Unforgettable",v:680}],insight:"'Stormy' captures it — wild, dark, and impossible to forget."},
+  ],
+  single:[
+   {q:"Your overall rating?",opts:[{l:"Loved it (5★)",v:1680},{l:"Liked it (4★)",v:980},{l:"It was okay (3★)",v:580},{l:"Not for me (1–2★)",v:320}],insight:"Mirrors the real set — about half five-star, average around 4.2, with a frustrated tail."},
+   {q:"The best thing about it?",opts:[{l:"The atmosphere",v:1480},{l:"The intensity",v:980},{l:"The prose",v:680},{l:"The structure",v:380}],insight:"Atmosphere leads decisively — the moors and mood are the lasting impression."},
+   {q:"What is it, really?",opts:[{l:"A tragedy",v:1280},{l:"An anti-romance",v:980},{l:"A revenge tale",v:780},{l:"A ghost story",v:580}],insight:"'Tragedy' leads, but the anti-romance and revenge readings are gaining."},
+   {q:"Recommend to…",opts:[{l:"Classics lovers",v:1280},{l:"Gothic fans",v:1080},{l:"Patient readers",v:680},{l:"Almost no one",v:280}],insight:"Best matched to classics and Gothic readers; patience is the recurring caveat."},
+   {q:"The toxic romance is…",opts:[{l:"The point",v:1280},{l:"Disturbing",v:980},{l:"Fascinating",v:780},{l:"Overhyped",v:480}],insight:"Most read the toxicity as deliberate — not a flaw to apologize for."},
+   {q:"Best word for it?",opts:[{l:"Haunting",v:1280},{l:"Bleak",v:980},{l:"Passionate",v:780},{l:"Exhausting",v:480}],insight:"Haunting leads — the word readers reach for most."},
+   {q:"Compared to the hype?",opts:[{l:"Exceeded it",v:1080},{l:"Met it",v:1180},{l:"Fell short",v:680},{l:"Didn't get it",v:480}],insight:"Mostly met-or-exceeded, with a real 'didn't get the hype' minority."},
+   {q:"The narration frame is…",opts:[{l:"Brilliant",v:1080},{l:"Clever",v:1180},{l:"Confusing",v:680},{l:"Unnecessary",v:480}],insight:"The Nelly/Lockwood frame is discussed in ~a quarter of reviews — mostly admired, sometimes resented."},
+   {q:"Would you re-read it?",opts:[{l:"Definitely",v:880},{l:"Maybe",v:1180},{l:"Probably not",v:780},{l:"Never",v:520}],insight:"Skews against re-reading — admired more than it's revisited."},
+   {q:"Brontë vs the field?",opts:[{l:"A one-off masterpiece",v:1280},{l:"A great classic",v:980},{l:"Solid",v:680},{l:"Overrated",v:380}],insight:"The single-novel mystique lifts it to 'one-off masterpiece' for the largest group."},
+  ],
+ },
+ ending:{
+  binary:[
+   {q:"The ending is more hopeful than the rest of the book.",opts:[{l:"Agree",v:2210},{l:"Disagree",v:820}],insight:"The Hareton-and-Cathy turn is widely felt as the one shaft of light after the storm."},
+   {q:"Heathcliff's death is a release, not a tragedy.",opts:[{l:"Agree",v:1980},{l:"Disagree",v:1080}],insight:"Most read his end as a longed-for reunion with Catherine rather than a loss to mourn."},
+   {q:"Hareton and young Cathy earn their happy ending.",opts:[{l:"Agree",v:2180},{l:"Disagree",v:780}],insight:"Their slow, gentle thaw is the resolution readers most want and most believe."},
+   {q:"The ghostly reunion of Heathcliff and Catherine is the real ending.",opts:[{l:"Agree",v:1680},{l:"Disagree",v:1380}],insight:"The supernatural close (raised in ~16% of reviews) divides literal and symbolic readers."},
+   {q:"Revenge ultimately destroys Heathcliff.",opts:[{l:"Agree",v:2010},{l:"Disagree",v:980}],insight:"His revenge hollows out as he nears death — a reading most reviews share."},
+   {q:"The second generation's resolution feels rushed.",opts:[{l:"Agree",v:1480},{l:"Disagree",v:1580}],insight:"Split — some find Hareton and Cathy's turn abrupt, others perfectly weighted."},
+   {q:"The ending redeems the bleakness of the book.",opts:[{l:"Agree",v:1740},{l:"Disagree",v:1320}],insight:"Many feel the gentle close earns the preceding cruelty; others find it too little, too late."},
+   {q:"Heathcliff gets the ending he deserved.",opts:[{l:"Agree",v:1580},{l:"Disagree",v:1480}],insight:"Split on whether death-as-reunion is fitting justice or undeserved mercy."},
+   {q:"Lockwood's final visit is the right way to close.",opts:[{l:"Agree",v:1540},{l:"Disagree",v:1480}],insight:"The frame's quiet final image divides — fitting hush to some, anticlimax to others."},
+   {q:"The book needed a hopeful ending to bear the cruelty.",opts:[{l:"Agree",v:1820},{l:"Disagree",v:1180}],insight:"Most feel the cruelty would be unbearable without the second generation's light."},
+  ],
+  pairwise:[
+   {q:"The ending is…",opts:[{l:"Hopeful",v:1740},{l:"Bleak",v:1380}],insight:"Hopeful edges bleak — the rare optimistic note lands for most."},
+   {q:"Heathcliff's death is…",opts:[{l:"A release",v:1880},{l:"A tragedy",v:1180}],insight:"Release wins — readers see peace, even longing, in his end."},
+   {q:"The real ending is…",opts:[{l:"Hareton & Cathy's union",v:1640},{l:"The ghostly reunion",v:1420}],insight:"The living couple narrowly outweighs the haunting as the 'true' close."},
+   {q:"Revenge delivers…",opts:[{l:"Futility",v:1740},{l:"Justice",v:1280}],insight:"Most see Heathcliff's revenge curdle into emptiness rather than satisfaction."},
+   {q:"The gen-2 happy ending is…",opts:[{l:"Earned",v:1740},{l:"Rushed",v:1340}],insight:"Earned for most, though a real minority finds the turn quick."},
+   {q:"Your gut reaction to the close?",opts:[{l:"Satisfying",v:1880},{l:"Frustrating",v:1080}],insight:"Predominantly satisfying — the gentle resolution lands."},
+   {q:"Does the world heal?",opts:[{l:"Redemptive",v:1680},{l:"Unchanged",v:1340}],insight:"Most read genuine healing in the next generation; some see the same old moors."},
+   {q:"The ghost ending reads as…",opts:[{l:"Lovers reunited",v:1640},{l:"Lovers doomed",v:1420}],insight:"Reunited edges doomed — readers grant the pair peace in death they never found in life."},
+   {q:"Heathcliff at the end is…",opts:[{l:"At peace",v:1580},{l:"Defeated",v:1480}],insight:"Peace narrowly wins — he stops fighting, drawn toward Catherine."},
+   {q:"Which image lingers?",opts:[{l:"The graves",v:1480},{l:"The young couple",v:1540}],insight:"The living couple narrowly outlasts the graves as the final picture readers carry."},
+  ],
+  emoji:[
+   {q:"React to the final chapter.",opts:[{em:"🕊️",l:"Peace",v:1280},{em:"💔",l:"Grief",v:880},{em:"🌫️",l:"Eerie",v:980},{em:"😌",l:"Relief",v:680}],insight:"Peace and relief edge the eerie — the storm finally settles."},
+   {q:"Heathcliff's death made you feel…",opts:[{em:"😌",l:"Release",v:1380},{em:"💔",l:"Sad",v:780},{em:"😨",l:"Chilling",v:880},{em:"😐",l:"Mixed",v:680}],insight:"Release leads — though the chill of the ghost reunion lingers."},
+   {q:"Hareton & Cathy's union?",opts:[{em:"🥹",l:"Hopeful",v:1480},{em:"❤️",l:"Love",v:980},{em:"😊",l:"Happy",v:780},{em:"😌",l:"Relief",v:580}],insight:"Hope and relief — readers exhale as the cycle finally breaks."},
+   {q:"The ghost reunion?",opts:[{em:"👻",l:"Haunting",v:1280},{em:"🥹",l:"Romantic",v:880},{em:"😨",l:"Unsettling",v:880},{em:"🤔",l:"Ambiguous",v:780}],insight:"Haunting above all — beautiful and disquieting at once."},
+   {q:"Revenge's outcome?",opts:[{em:"😞",l:"Hollow",v:1280},{em:"😌",l:"Just",v:780},{em:"😨",l:"Destructive",v:880},{em:"🤔",l:"Mixed",v:680}],insight:"Hollow leads — the revenge gives Heathcliff nothing in the end."},
+   {q:"How satisfied with the close?",opts:[{em:"😌",l:"Very",v:1380},{em:"🙂",l:"Mostly",v:980},{em:"😐",l:"Mixed",v:680},{em:"😕",l:"Let down",v:480}],insight:"Satisfaction is solid; the 'let down' slice wanted the gen-2 turn slower."},
+   {q:"The pacing of the ending?",opts:[{em:"😌",l:"Right",v:1180},{em:"👍",l:"Good",v:980},{em:"😮‍💨",l:"Rushed",v:880},{em:"🥱",l:"Dragged",v:580}],insight:"Mostly well-judged, with a real 'rushed' note on the second-generation resolution."},
+   {q:"Did it surprise you?",opts:[{em:"😲",l:"Yes",v:780},{em:"🙂",l:"A little",v:1180},{em:"😐",l:"Not much",v:980},{em:"🥱",l:"Expected",v:680}],insight:"Mild surprise — the hopeful turn is the part that catches readers off guard."},
+   {q:"Turning the last page?",opts:[{em:"😌",l:"Settled",v:1280},{em:"💔",l:"Haunted",v:980},{em:"🥹",l:"Moved",v:780},{em:"💭",l:"Thoughtful",v:680}],insight:"Settled but haunted — the calm doesn't quite dispel the ghosts."},
+   {q:"Sum up the close.",opts:[{em:"🌅",l:"Dawn after storm",v:1280},{em:"👻",l:"Ghostly",v:980},{em:"💔",l:"Bittersweet",v:880},{em:"🕊️",l:"Peace",v:680}],insight:"'Dawn after storm' captures it — light arriving only once the worst is spent."},
+  ],
+  single:[
+   {q:"How did the ending feel?",opts:[{l:"Hopeful",v:1480},{l:"Bittersweet",v:1080},{l:"Bleak",v:680},{l:"Rushed",v:480}],insight:"Hopeful and bittersweet lead — the gentlest note in a dark book."},
+   {q:"Heathcliff's death was…",opts:[{l:"A release",v:1280},{l:"A tragedy",v:780},{l:"Justice",v:880},{l:"Anticlimactic",v:580}],insight:"'A release' leads — readers grant him the reunion he craved."},
+   {q:"The most powerful ending beat?",opts:[{l:"Heathcliff's death",v:1180},{l:"The ghost reunion",v:980},{l:"Hareton & Cathy",v:1080},{l:"Lockwood at the graves",v:480}],insight:"A near three-way tie — the close lands on death, haunting, and renewal at once."},
+   {q:"The gen-2 happy ending was…",opts:[{l:"Earned",v:1280},{l:"Welcome",v:1080},{l:"A bit rushed",v:680},{l:"Unconvincing",v:340}],insight:"Mostly earned and welcome; 'rushed' is the main reservation."},
+   {q:"The ghost ending is…",opts:[{l:"Real",v:880},{l:"A metaphor",v:1180},{l:"Ambiguous on purpose",v:1080},{l:"Unnecessary",v:380}],insight:"Most read it as metaphor or deliberate ambiguity rather than literal haunting."},
+   {q:"Best word for the ending?",opts:[{l:"Hopeful",v:1180},{l:"Haunting",v:1080},{l:"Redemptive",v:780},{l:"Bleak",v:480}],insight:"Hopeful and haunting share the close — light and shadow together."},
+   {q:"Revenge ultimately brought Heathcliff…",opts:[{l:"Emptiness",v:1280},{l:"Peace at last",v:880},{l:"Nothing",v:880},{l:"Ruin",v:580}],insight:"Emptiness leads — the revenge consumes him without satisfying him."},
+   {q:"Did the ending change your view?",opts:[{l:"Raised it",v:1280},{l:"No change",v:1080},{l:"Lowered a little",v:480},{l:"Lowered a lot",v:240}],insight:"The hopeful turn lifts the book for the largest group."},
+   {q:"What lingers most?",opts:[{l:"The moors",v:1180},{l:"The young couple",v:980},{l:"The graves",v:880},{l:"Heathcliff",v:980}],insight:"The moors themselves linger — the landscape outlasts every character."},
+   {q:"How long did it stay with you?",opts:[{l:"Still haunted",v:1280},{l:"A few days",v:980},{l:"Briefly",v:580},{l:"Not really",v:280}],insight:"High persistence — 'still haunted' is the apt phrase."},
+  ],
+ },
+ pacing:{
+  binary:[
+   {q:"The framed narration makes it harder to get into.",opts:[{l:"Agree",v:1640},{l:"Disagree",v:1480}],insight:"The story-within-a-story (raised in ~26% of reviews) is a real on-ramp hurdle for many."},
+   {q:"The first generation's story is far more gripping.",opts:[{l:"Agree",v:2080},{l:"Disagree",v:980}],insight:"The Cathy-Heathcliff storm grips harder than the gentler second half for most readers."},
+   {q:"The second half drags compared to the first.",opts:[{l:"Agree",v:1620},{l:"Disagree",v:1480}],insight:"Split — the next-generation story loses some readers even as it redeems others."},
+   {q:"The Victorian prose is a barrier worth pushing through.",opts:[{l:"Agree",v:2010},{l:"Disagree",v:980}],insight:"Most who push past the dense language feel rewarded for it."},
+   {q:"The repeating names make it confusing.",opts:[{l:"Agree",v:1480},{l:"Disagree",v:1620}],insight:"Catherine/Cathy and the Lintons/Earnshaws trip up a real minority (~8% flag it explicitly)."},
+   {q:"It's a slow read that rewards patience.",opts:[{l:"Agree",v:2080},{l:"Disagree",v:980}],insight:"The 'slow but worth it' verdict is the dominant pacing read."},
+   {q:"The story-within-a-story distances you from the emotion.",opts:[{l:"Agree",v:1580},{l:"Disagree",v:1520}],insight:"Split — the frame mutes the intensity for some, frames it powerfully for others."},
+   {q:"Once Catherine dies, the momentum dips.",opts:[{l:"Agree",v:1620},{l:"Disagree",v:1440}],insight:"Many feel the energy shifts after her death; others say the dread only deepens."},
+   {q:"It's shorter and faster than its reputation suggests.",opts:[{l:"Agree",v:1480},{l:"Disagree",v:1540}],insight:"Split — some are surprised by its brevity, others by how slowly it reads."},
+   {q:"The timeline is hard to keep straight.",opts:[{l:"Agree",v:1380},{l:"Disagree",v:1680}],insight:"Most manage the chronology; the nested flashbacks lose a minority."},
+  ],
+  pairwise:[
+   {q:"Which gripped you more?",opts:[{l:"First generation",v:1980},{l:"Second generation",v:1140}],insight:"The first generation's intensity wins decisively on grip."},
+   {q:"Which was your experience?",opts:[{l:"Gripping",v:1640},{l:"Heavy going",v:1480}],insight:"A close split — the book grips and exhausts in roughly equal measure."},
+   {q:"The frame narration is…",opts:[{l:"Immersive",v:1480},{l:"Distancing",v:1540}],insight:"Narrowly 'distancing' — the nested telling holds some readers at arm's length."},
+   {q:"It's a…",opts:[{l:"Slow burn",v:1880},{l:"A slog",v:1140}],insight:"Slow-burn wins clearly — demanding, but most don't call it a slog."},
+   {q:"The stronger half?",opts:[{l:"Before Catherine's death",v:1880},{l:"After Catherine's death",v:1180}],insight:"The first half wins — Catherine's death is the book's energy peak."},
+   {q:"Your verdict on the effort?",opts:[{l:"Worth the effort",v:2010},{l:"More effort than reward",v:1080}],insight:"Worth-it wins, but a real minority finds the climb steeper than the payoff."},
+   {q:"What pulls you through?",opts:[{l:"The atmosphere",v:1640},{l:"The plot",v:1480}],insight:"The brooding atmosphere edges the plot as the thing that carries readers."},
+   {q:"The timeline and names felt…",opts:[{l:"Clear enough",v:1640},{l:"Confusing",v:1380}],insight:"Mostly manageable, but the repeated names trip a steady minority."},
+   {q:"How did you go through it?",opts:[{l:"Read it fast",v:1280},{l:"Paced myself",v:1740}],insight:"Most pace themselves — the prose and bleakness reward slow reading."},
+   {q:"What kept you going?",opts:[{l:"The prose",v:1340},{l:"The story",v:1680}],insight:"The story's pull edges the prose, despite the language being a frequent talking point."},
+  ],
+  emoji:[
+   {q:"React to the pacing.",opts:[{em:"🏃",l:"Brisk",v:680},{em:"😌",l:"Steady",v:1180},{em:"🐢",l:"Slow",v:1280},{em:"😮‍💨",l:"Uneven",v:680}],insight:"Slow and steady dominate — a deliberate, demanding read."},
+   {q:"The framed narration?",opts:[{em:"👏",l:"Clever",v:1080},{em:"🤔",l:"Distancing",v:980},{em:"😴",l:"Tedious",v:780},{em:"🙂",l:"Fine",v:780}],insight:"Clever for many, but the frame tires or distances a real share."},
+   {q:"The Victorian prose?",opts:[{em:"😍",l:"Beautiful",v:980},{em:"😌",l:"Fine",v:1180},{em:"😮‍💨",l:"Dense",v:980},{em:"🥱",l:"A slog",v:580}],insight:"Split between beauty and density — the language is the book's pacing pressure point."},
+   {q:"The repeating names?",opts:[{em:"🤯",l:"Confusing",v:880},{em:"😐",l:"Manageable",v:1180},{em:"🙂",l:"Fine",v:980},{em:"🤔",l:"Needed a chart",v:780}],insight:"Manageable for most, but 'needed a family tree' is a recurring half-joke."},
+   {q:"The second half?",opts:[{em:"😴",l:"Dragged",v:880},{em:"😐",l:"Steady",v:1080},{em:"🙂",l:"Engaging",v:980},{em:"👏",l:"Strong",v:680}],insight:"Mixed — the gentler half engages some and slows others."},
+   {q:"Getting into it?",opts:[{em:"🚪",l:"Instant",v:580},{em:"🙂",l:"A few chapters",v:1180},{em:"😮‍💨",l:"Took a while",v:980},{em:"😣",l:"Struggled",v:780}],insight:"A slow on-ramp — the frame and prose mean it rarely hooks instantly."},
+   {q:"Could you put it down?",opts:[{em:"🙅",l:"Couldn't",v:980},{em:"📖",l:"Hard to",v:1080},{em:"😌",l:"Now and then",v:880},{em:"😴",l:"Easily",v:680}],insight:"More 'hard to put down' than not, once the storm gets going."},
+   {q:"The timeline?",opts:[{em:"🧩",l:"Clear",v:980},{em:"🤔",l:"Tricky",v:1180},{em:"🤯",l:"Lost me",v:680},{em:"😐",l:"Fine",v:780}],insight:"Tricky for many — the nested flashbacks demand attention."},
+   {q:"Keeping going at points?",opts:[{em:"😮‍💨",l:"Needed breaks",v:1080},{em:"🙂",l:"Fine",v:980},{em:"😌",l:"Easy",v:680},{em:"😣",l:"Tough",v:780}],insight:"Many needed breaks — the bleakness, more than the length, is the weight."},
+   {q:"Sum up the pace.",opts:[{em:"🐢",l:"Slow burn",v:1280},{em:"😌",l:"Steady",v:980},{em:"🌪️",l:"Stormy",v:880},{em:"😮‍💨",l:"Demanding",v:680}],insight:"Slow burn captures it — heat building under a deliberate, demanding surface."},
+  ],
+  single:[
+   {q:"Rate the pacing?",opts:[{l:"Steady",v:1280},{l:"Slow burn",v:1180},{l:"Uneven",v:680},{l:"A slog",v:480}],insight:"Steady and slow-burn lead — demanding but mostly rewarding."},
+   {q:"The book's difficulty was…",opts:[{l:"Just right",v:880},{l:"Worth the effort",v:1480},{l:"A bit much",v:780},{l:"Too much",v:380}],insight:"'Worth the effort' is the dominant verdict on the prose and structure."},
+   {q:"Where did it drag?",opts:[{l:"Never",v:980},{l:"The second generation",v:1180},{l:"After Catherine's death",v:880},{l:"The frame chapters",v:680}],insight:"The second-generation stretch is the most-named drag point."},
+   {q:"What pulled you through?",opts:[{l:"The atmosphere",v:1280},{l:"The intensity",v:980},{l:"The prose",v:680},{l:"Needing to know the end",v:780}],insight:"The atmosphere is the engine; sheer intensity is the close second."},
+   {q:"The framed narration felt…",opts:[{l:"Immersive",v:880},{l:"Clever",v:1180},{l:"Distancing",v:880},{l:"Confusing",v:580}],insight:"Clever leads, but distancing and confusing together are a sizable counterweight."},
+   {q:"The repeating names were…",opts:[{l:"Fine",v:980},{l:"A little confusing",v:1180},{l:"Genuinely confusing",v:680},{l:"Needed a family tree",v:780}],insight:"'A little confusing' leads — many readers literally sketch the family tree."},
+   {q:"The stronger half?",opts:[{l:"The first generation",v:1480},{l:"The second generation",v:880},{l:"Both equally",v:680},{l:"Neither gripped me",v:480}],insight:"The first generation wins clearly — the storm before the calm."},
+   {q:"How fast did you read it?",opts:[{l:"Devoured it",v:780},{l:"Steady clip",v:1180},{l:"Slow and steady",v:1080},{l:"Had to push",v:580}],insight:"Most read it at a steady-to-slow clip — a book that resists rushing."},
+   {q:"The Victorian prose was…",opts:[{l:"Beautiful",v:980},{l:"Manageable",v:1180},{l:"Dense",v:880},{l:"A barrier",v:480}],insight:"Manageable leads, but 'dense' and 'a barrier' together are the pacing friction."},
+   {q:"One change to the pacing?",opts:[{l:"Tighten the second half",v:980},{l:"Nothing",v:1180},{l:"Simplify the frame",v:780},{l:"Clearer timeline",v:680}],insight:"'Nothing' leads; tightening the second half is the top requested edit."},
+  ],
+ },
+},
+};
+
+/* ===================== STATE + RENDER ===================== */
+const BOOKS=[
+  {id:'demon',title:'Demon Copperhead',author:'Barbara Kingsolver',cover:'DEMON COPPER&shy;HEAD',accent:'var(--support-magenta-1)',src:'660 Goodreads reviews'},
+  {id:'tomorrow',title:'Tomorrow, and Tomorrow, and Tomorrow',author:'Gabrielle Zevin',cover:'TOMORROW³',accent:'var(--support-aqua-1)',src:'567 Goodreads reviews'},
+  {id:'wuthering',title:'Wuthering Heights',author:'Emily Brontë',cover:'WUTHERING HEIGHTS',accent:'#1c416c',src:'565 Goodreads reviews'},
+];
+let state={book:null,cat:null,len:null,tab:'binary',answers:{}};
+
+const bookGrid=document.getElementById('bookGrid');
+BOOKS.forEach(bk=>{const b=document.createElement('button');b.className='book-card';
+  b.innerHTML=`<span class="bk-meta"><span class="bk-title">${bk.title}</span><span class="bk-author">${bk.author}</span><span class="bk-src">${bk.src}</span></span>`;
+  b.onclick=()=>{state.book=bk.id;document.querySelectorAll('.book-card').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');refreshStart();};
+  bookGrid.appendChild(b);});
+
+const catGrid=document.getElementById('catGrid');
+CATS.forEach(c=>{const b=document.createElement('button');b.className='cat-card';
+  b.innerHTML=`<span class="ci">${c.icon}</span><span class="ct">${c.title}</span><span class="cd">${c.desc}</span>`;
+  b.onclick=()=>{state.cat=c.id;document.querySelectorAll('.cat-card').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');refreshStart();};
+  catGrid.appendChild(b);});
+const lenRow=document.getElementById('lenRow');
+LENGTHS.forEach(l=>{const b=document.createElement('button');b.className='len-opt';
+  b.innerHTML=`<div class="ln">${l.n}</div><div class="ld">${l.d}</div>`;
+  b.onclick=()=>{state.len=l.n;document.querySelectorAll('.len-opt').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');refreshStart();};
+  lenRow.appendChild(b);});
+function refreshStart(){document.getElementById('startBtn').disabled=!(state.book&&state.cat&&state.len);}
+
+document.getElementById('startBtn').onclick=()=>{
+  state.tab='binary';state.answers={};
+  document.getElementById('setup').classList.add('hidden');
+  document.getElementById('session').classList.remove('hidden');
+  renderChips();renderTabs();renderQuestions();window.scrollTo({top:0,behavior:'smooth'});
+};
+document.getElementById('resetBtn').onclick=()=>{
+  document.getElementById('session').classList.add('hidden');
+  document.getElementById('setup').classList.remove('hidden');window.scrollTo({top:0,behavior:'smooth'});
+};
+
+function renderChips(){const cat=CATS.find(c=>c.id===state.cat);const bk=BOOKS.find(b=>b.id===state.book);
+  document.getElementById('sessionChips').innerHTML=
+    `<span class="chip">📖 ${bk.title}</span><span class="chip">${cat.icon} ${cat.title}</span><span class="chip">📊 ${state.len} ${state.len===1?'question':'questions'}</span>`;}
+function renderTabs(){const t=document.getElementById('tabs');t.innerHTML='';
+  MECHS.forEach(m=>{const b=document.createElement('button');b.className='tab'+(m.id===state.tab?' active':'');
+    b.innerHTML=`<span>${m.icon}</span>${m.label}`;b.onclick=()=>{state.tab=m.id;renderTabs();renderQuestions();};t.appendChild(b);});
+  document.getElementById('mechNote').innerHTML=MECHS.find(m=>m.id===state.tab).note;}
+
+function renderQuestions(){
+  const wrap=document.getElementById('questions');wrap.innerHTML='';
+  const mech=MECHS.find(m=>m.id===state.tab);
+  const list=DATA[state.book][state.cat][state.tab].slice(0,state.len);
+  list.forEach((q,i)=>{
+    const qid=`${state.cat}-${state.tab}-${i}`;
+    const card=document.createElement('div');card.className='qcard';
+    let head=`<span class="qcount">${i+1} / ${state.len}</span><span class="pill">${mech.pill}</span>`;
+    if(state.tab!=='single'){head+=`<div class="qtext">${q.q}</div><div class="qsub">${mech.sub}</div>`;}
+    card.innerHTML=head+`<div class="qbody" id="body-${qid}"></div>`;
+    wrap.appendChild(card);
+    renderBody(qid,q);
+  });
+  if(state.len>1){
+    const answered=Object.keys(state.answers).filter(k=>k.startsWith(`${state.cat}-${state.tab}-`)).length;
+    if(answered===state.len){const end=document.createElement('div');end.className='session-end';
+      end.innerHTML=`<h3>That's a wrap on this set ✺</h3><p>You answered all ${state.len} ${mech.label.toLowerCase()} takes. Switch tabs to see this category a different way.</p>`;
+      wrap.appendChild(end);}
+  }
+}
+
+function renderBody(qid,q){const body=document.getElementById(`body-${qid}`);body.innerHTML='';
+  const chosen=state.answers[qid];
+  body.appendChild(chosen===undefined?buildInput(qid,q):buildResults(qid,q,chosen));}
+
+function buildInput(qid,q){
+  const c=document.createElement('div');const mech=state.tab;
+  if(mech==='binary'){c.className='binary-row';
+    q.opts.forEach((o,i)=>{const b=document.createElement('button');b.className='opt-btn';b.textContent=o.l;b.onclick=()=>vote(qid,i);c.appendChild(b);});
+  }else if(mech==='pairwise'){c.className='pair-grid';
+    const mk=i=>{const d=document.createElement('button');d.className='pcard clickable';
+      d.innerHTML=`<div class="ptitle">${q.opts[i].l}</div><div class="phint">Tap to choose</div>`;d.onclick=()=>vote(qid,i);return d;};
+    const vs=document.createElement('div');vs.className='pvs';vs.textContent='vs';
+    c.append(mk(0),vs,mk(1));
+  }else if(mech==='emoji'){c.className='emoji-row';
+    q.opts.forEach((o,i)=>{const b=document.createElement('button');b.className='emoji-btn';
+      b.innerHTML=`<span class="em">${o.em}</span><span class="el">${o.l}</span>`;b.onclick=()=>vote(qid,i);c.appendChild(b);});
+  }else{ /* single — BuzzFeed */
+    const box=document.createElement('div');box.className='bf-q';box.textContent=q.q;c.appendChild(box);
+    const g=document.createElement('div');g.className='bf-grid';
+    q.opts.forEach((o,i)=>{const b=document.createElement('button');
+      b.className='bf-tile clickable '+((i===0||i===3)?'a':'b');
+      b.innerHTML=`<span class="bf-label">${o.l}</span>`;b.onclick=()=>vote(qid,i);g.appendChild(b);});
+    c.appendChild(g);
+  }
+  return c;
+}
+
+function vote(qid,idx){state.answers[qid]=idx;renderQuestions();}
+
+function pcts(opts,chosen){const counts=opts.map((o,i)=>o.v+(i===chosen?1:0));
+  const total=counts.reduce((a,b)=>a+b,0);
+  return {counts,total,pct:counts.map(c=>Math.round(c/total*100))};}
+
+function buildResults(qid,q,chosen){
+  const mech=state.tab;const {counts,total,pct}=pcts(q.opts,chosen);
+  const c=document.createElement('div');
+
+  if(mech==='binary'){
+    const ai=q.opts.findIndex(o=>o.l==='Agree'),di=q.opts.findIndex(o=>o.l==='Disagree');
+    const bar=document.createElement('div');bar.className='diverge';
+    bar.innerHTML=`<div class="seg seg-dis ${chosen===di?'me':''}" style="width:0">${pct[di]}% disagreed</div>
+                   <div class="seg seg-agr ${chosen===ai?'me':''}" style="width:0">${pct[ai]}% agreed</div>`;
+    c.appendChild(bar);
+    requestAnimationFrame(()=>{bar.children[0].style.width=pct[di]+'%';bar.children[1].style.width=pct[ai]+'%';});
+    const youAgree=chosen===ai;const majAgree=pct[ai]>=pct[di];
+    addSummary(c,`You ${youAgree?'agreed':'disagreed'}. <b>Most readers ${majAgree?'agree':'disagree'}</b> with this take.`);
+  }
+  else if(mech==='pairwise'){
+    const grid=document.createElement('div');grid.className='pair-grid';
+    const mk=i=>{const d=document.createElement('div');d.className='pcard'+(chosen===i?' sel':'');
+      d.innerHTML=`<div class="pfill" style="height:0"></div>
+        ${chosen===i?'<div class="ppick">Your pick</div>':''}
+        <div class="ptitle">${q.opts[i].l}</div>
+        <div class="ppct">${pct[i]}%</div>`;return d;};
+    const vs=document.createElement('div');vs.className='pvs';vs.textContent='vs';
+    const l=mk(0),r=mk(1);grid.append(l,vs,r);c.appendChild(grid);
+    requestAnimationFrame(()=>{l.querySelector('.pfill').style.height=pct[0]+'%';r.querySelector('.pfill').style.height=pct[1]+'%';});
+    const wi=pct[0]>=pct[1]?0:1;
+    addSummary(c,`Readers side with <b>${q.opts[wi].l}</b> (${pct[wi]}%).`);
+  }
+  else if(mech==='single'){
+    const box=document.createElement('div');box.className='bf-q';box.textContent=q.q;c.appendChild(box);
+    const g=document.createElement('div');g.className='bf-grid';
+    const topi=pct.indexOf(Math.max(...pct));
+    q.opts.forEach((o,i)=>{const t=document.createElement('div');
+      t.className='bf-tile '+((i===0||i===3)?'a':'b')+(chosen===i?' picked':'');
+      t.innerHTML=`${chosen===i?'<span class="bf-chip">Your pick</span>':''}
+        <div class="bf-fill" style="height:0"></div>
+        <span class="bf-label">${o.l}</span><span class="bf-pct">${pct[i]}%</span>`;g.appendChild(t);});
+    c.appendChild(g);
+    requestAnimationFrame(()=>{g.querySelectorAll('.bf-fill').forEach((f,i)=>f.style.height=pct[i]+'%');});
+    addSummary(c,`Most readers picked <b>${q.opts[topi].l}</b> (${pct[topi]}%).`);
+  }
+  else{ /* emoji — horizontal bars */
+    const maxi=pct.indexOf(Math.max(...pct));
+    q.opts.forEach((o,i)=>{const row=document.createElement('div');row.className='res-row';
+      const mine=i===chosen;const fc=mine?'mine':(i===maxi?'':'alt');
+      row.innerHTML=`<div class="res-top"><span class="res-label ${mine?'mine':''}">${o.em} ${o.l} ${mine?'<span class="res-tag">Your pick</span>':''}</span><span class="res-pct">${pct[i]}%</span></div><div class="bar-track"><div class="bar-fill ${fc}" style="width:0"></div></div>`;
+      c.appendChild(row);requestAnimationFrame(()=>{row.querySelector('.bar-fill').style.width=pct[i]+'%';});});
+    const maxIdx=pct.indexOf(Math.max(...pct));
+    addSummary(c,`Most readers feel <b>${q.opts[maxIdx].l.toLowerCase()}</b> (${pct[maxIdx]}%).`);
+  }
+
+  const ins=document.createElement('div');ins.className='insight';
+  ins.innerHTML=`<span class="ii">💡</span><p>${mech==='pairwise'?'':'<b>Why this matters:</b> '}${q.insight}</p>`;c.appendChild(ins);
+  const tl=document.createElement('div');tl.className='total-line';
+  tl.textContent=`${total.toLocaleString()} readers weighed in · switch tabs to answer this category another way`;c.appendChild(tl);
+  return c;
+}
+function addSummary(c,html){const s=document.createElement('div');s.className='summary';s.innerHTML=html;c.appendChild(s);}
+</script>
+</body>
+</html>
